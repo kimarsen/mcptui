@@ -114,11 +114,12 @@ uvx mcptui
   - Stores recent invocations with timestamps, status, input parameters, and duration.
   - Easily copy previous requests or inspect errors.
 
-- 🔍 **Auto-Discovery of Configured Servers**:
+- 🔍 **Auto-Discovery & Local Server Management**:
   - Scans system paths for:
     - **Claude Desktop** (`claude_desktop_config.json` on macOS, Windows, Linux)
     - **Cursor** (`.cursor/mcp.json` & global settings)
     - Local project `mcp.json` / `.mcp.json`
+  - Register any server with `mcptui add <name> <command>`.
   - Switch between servers on the fly with `F2`.
 
 ---
@@ -128,17 +129,22 @@ uvx mcptui
 `mcptui` is also a powerful headless CLI for scripting and CI/CD testing:
 
 ```bash
-# List all discovered servers on the system
+# Register a server into local mcp.json permanently
+mcptui add notes "python examples/sample_server.py"
+
+# List all registered and discovered servers
 mcptui servers
 
 # Headless capabilities inspection
-mcptui list demo
+mcptui list notes
+# Or on the fly without saving:
+mcptui list --cmd "python examples/sample_server.py"
 
-# Execute a tool headlessly and get JSON output
-mcptui call calculate '{"expression": "2 ** 10"}' --server demo
+# Execute a tool headlessly and get clean JSON output
+mcptui call convert_temperature '{"value": 100, "from_scale": "C", "to_scale": "F"}' --server notes
 
-# Execute against an auto-discovered Claude Desktop server
-mcptui call read_file '{"path": "README.md"}' --server filesystem
+# Remove a server from local config
+mcptui remove notes
 ```
 
 ---

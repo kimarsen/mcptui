@@ -1,12 +1,13 @@
 """
 CLI entrypoint for mcptui.
-Supports interactive TUI launching, server discovery, and headless operations.
+Supports interactive TUI launching, server discovery, management, and headless operations.
 """
 
 from __future__ import annotations
 
 import asyncio
 import json
+import os
 import sys
 from typing import List, Optional
 
@@ -26,7 +27,11 @@ from rich.console import Console
 from rich.table import Table
 
 from mcptui.client import MCPClientManager
-from mcptui.config import discover_all_servers
+from mcptui.config import (
+    discover_all_servers,
+    remove_from_local_mcp_json,
+    save_to_local_mcp_json,
+)
 from mcptui.models import ServerConfig
 from mcptui.ui.app import run_tui
 
@@ -51,7 +56,7 @@ def get_demo_config() -> ServerConfig:
 @app.callback(invoke_without_command=True)
 def main_callback(
     ctx: typer.Context,
-    server: Optional[str] = typer.Option(None, "--server", "-s", help="Name of an auto-discovered MCP server to connect to"),
+    server: Optional[str] = typer.Option(None, "--server", "-s", help="Name of an MCP server to connect to"),
     cmd: Optional[str] = typer.Option(None, "--cmd", "-c", help="Command to run via stdio (e.g. 'python server.py')"),
     sse: Optional[str] = typer.Option(None, "--sse", help="SSE URL to connect to (e.g. 'http://localhost:8000/sse')"),
     demo: bool = typer.Option(False, "--demo", "-d", help="Launch directly into demo mode"),
@@ -70,31 +75,24 @@ def main_callback(
     elif sse:
         target_config = ServerConfig(name="remote-sse", transport="sse", url=sse, source="cli")
     elif cmd:
-        parts = cmd.split()
-        target_config = ServerConfig(
-            name="custom-cmd",
-            transport="stdio",
-            command=parts[0],
-            args=parts[1:] if len(parts) > 1 else [],
-            source="cli",
-        )
+        target_config = _parse_cmd_to_config("stdio-server", cmd)
     elif server:
         all_servers = discover_all_servers()
         if server in all_servers:
             target_config = all_servers[server]
+        elif server.lower() == "demo":
+            target_config = get_demo_config()
         else:
             rprint(f"[bold red]Error:[/bold red] Server '{server}' not found among discovered servers.")
-            rprint("Run [bold cyan]mcptui servers[/bold cyan] to see available servers.")
+            rprint("Run [bold cyan]mcptui servers[/bold cyan] to see available servers or [bold cyan]mcptui demo[/bold cyan] for demo.")
             raise typer.Exit(code=1)
     else:
         # Auto-detect servers
         all_servers = discover_all_servers()
         if all_servers:
-            # Pick the first one
             first_name = next(iter(all_servers))
             target_config = all_servers[first_name]
         else:
-            # Fallback to demo
             target_config = get_demo_config()
 
     run_tui(target_config)
@@ -115,10 +113,10 @@ def cmd_run(
 ):
     """
     Launch an MCP server via stdio and open mcptui connected to it.
+    Example: mcptui run "python my_server.py"
     Example: mcptui run "npx -y @modelcontextprotocol/server-everything"
     """
     full_args = list(args) if args else []
-    # If command contains spaces and no args were given, split command
     if not full_args and " " in command:
         parts = command.split()
         cmd = parts[0]
@@ -126,19 +124,17 @@ def cmd_run(
     else:
         cmd = command
 
+    # Use a descriptive name based on the target script or command
+    name = _derive_friendly_name(cmd, full_args)
+
     cfg = ServerConfig(
-        name=Path_name(cmd),
+        name=name,
         transport="stdio",
         command=cmd,
         args=full_args,
         source="cli:run",
     )
     run_tui(cfg)
-
-
-def Path_name(cmd: str) -> str:
-    import os
-    return os.path.basename(cmd)
 
 
 @app.command(name="connect")
@@ -160,7 +156,8 @@ def cmd_servers():
     discovered = discover_all_servers()
     if not discovered:
         rprint("[yellow]No MCP servers found in Claude Desktop, Cursor, or local mcp.json.[/yellow]")
-        rprint("Try [bold cyan]mcptui demo[/bold cyan] to test drive mcptui with a built-in server.")
+        rprint("Try [bold cyan]mcptui demo[/bold cyan] to test drive mcptui with a built-in server,")
+        rprint("or [bold cyan]mcptui add <name> <command>[/bold cyan] to register one locally.")
         return
 
     table = Table(title="🔍 Discovered MCP Servers", show_header=True, header_style="bold cyan")
@@ -175,14 +172,57 @@ def cmd_servers():
     console.print(table)
 
 
+@app.command(name="add")
+def cmd_add(
+    name: str = typer.Argument(..., help="Friendly name for the server"),
+    target: str = typer.Argument(..., help="Command (e.g. 'python server.py') or SSE URL"),
+):
+    """
+    Register an MCP server into local mcp.json so it is recognized permanently.
+    Example: mcptui add notes "python my_notes_server.py"
+    Example: mcptui add remote "http://localhost:8000/sse"
+    """
+    if target.startswith("http://") or target.startswith("https://"):
+        cfg = ServerConfig(name=name, transport="sse", url=target, source="local:mcp.json")
+    else:
+        parts = target.split()
+        cmd = parts[0]
+        args = parts[1:] if len(parts) > 1 else []
+        cfg = ServerConfig(name=name, transport="stdio", command=cmd, args=args, source="local:mcp.json")
+
+    file_path = save_to_local_mcp_json(cfg)
+    rprint(f"[bold green]✔ Saved server '{name}' to {file_path.name}![/bold green]")
+    rprint(f"You can now run [bold cyan]mcptui --server {name}[/bold cyan] or inspect with [bold cyan]mcptui list {name}[/bold cyan].")
+
+
+@app.command(name="remove")
+def cmd_remove(
+    name: str = typer.Argument(..., help="Name of server to remove from local mcp.json"),
+):
+    """
+    Remove an MCP server from local mcp.json.
+    """
+    if remove_from_local_mcp_json(name):
+        rprint(f"[bold green]✔ Server '{name}' removed from mcp.json.[/bold green]")
+    else:
+        rprint(f"[bold yellow]Server '{name}' not found in local mcp.json.[/bold yellow]")
+
+
 @app.command(name="list")
 def cmd_list(
     server_name: Optional[str] = typer.Argument(None, help="Name of server to inspect (or 'demo')"),
+    cmd: Optional[str] = typer.Option(None, "--cmd", "-c", help="Direct command to inspect on the fly"),
 ):
     """
     Headless listing of tools, resources, and prompts for a server.
+    Example: mcptui list demo
+    Example: mcptui list --cmd "python my_server.py"
     """
-    cfg = _resolve_server(server_name)
+    if cmd:
+        cfg = _parse_cmd_to_config("stdio-inspect", cmd)
+    else:
+        cfg = _resolve_server(server_name)
+
     client = MCPClientManager()
 
     async def _inspect():
@@ -215,6 +255,7 @@ def cmd_call(
     tool_name: str = typer.Argument(..., help="Tool name to execute"),
     arguments: str = typer.Argument("{}", help="JSON string of arguments"),
     server: Optional[str] = typer.Option(None, "--server", "-s", help="Server name (or 'demo')"),
+    cmd: Optional[str] = typer.Option(None, "--cmd", "-c", help="Direct command to execute on the fly"),
 ):
     """
     Execute a tool headlessly and output the JSON response.
@@ -226,7 +267,11 @@ def cmd_call(
         rprint(f"[bold red]Invalid JSON arguments:[/bold red] {exc}")
         raise typer.Exit(code=1)
 
-    cfg = _resolve_server(server)
+    if cmd:
+        cfg = _parse_cmd_to_config("stdio-call", cmd)
+    else:
+        cfg = _resolve_server(server)
+
     client = MCPClientManager()
 
     async def _execute():
@@ -245,6 +290,23 @@ def cmd_call(
     asyncio.run(_execute())
 
 
+def _derive_friendly_name(cmd: str, args: List[str]) -> str:
+    """Create an intuitive server label based on command or target script."""
+    for arg in args:
+        if arg.endswith(".py") or arg.endswith(".js") or arg.endswith(".ts"):
+            return os.path.basename(arg)
+    base = os.path.basename(cmd)
+    return base or "custom-server"
+
+
+def _parse_cmd_to_config(default_name: str, cmd_string: str) -> ServerConfig:
+    parts = cmd_string.split()
+    cmd = parts[0]
+    args = parts[1:] if len(parts) > 1 else []
+    name = _derive_friendly_name(cmd, args) or default_name
+    return ServerConfig(name=name, transport="stdio", command=cmd, args=args, source="cli")
+
+
 def _resolve_server(server_name: Optional[str]) -> ServerConfig:
     if not server_name or server_name.lower() == "demo":
         return get_demo_config()
@@ -254,6 +316,7 @@ def _resolve_server(server_name: Optional[str]) -> ServerConfig:
         return all_servers[server_name]
 
     rprint(f"[bold red]Error:[/bold red] Server '{server_name}' not found.")
+    rprint("Run [bold cyan]mcptui servers[/bold cyan] to see available servers.")
     raise typer.Exit(code=1)
 
 

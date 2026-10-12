@@ -117,7 +117,6 @@ def discover_all_servers() -> Dict[str, ServerConfig]:
     claude_path = get_claude_desktop_config_path()
     if claude_path and claude_path.is_file():
         for name, cfg in load_from_file(claude_path, "Claude Desktop").items():
-            # Don't overwrite local project configs with the same name
             if name not in discovered:
                 discovered[name] = cfg
 
@@ -129,3 +128,47 @@ def discover_all_servers() -> Dict[str, ServerConfig]:
                     discovered[name] = cfg
 
     return discovered
+
+
+def save_to_local_mcp_json(config: ServerConfig, path: Optional[Path] = None) -> Path:
+    """Save or update an MCP server definition in a local mcp.json file."""
+    target_path = path or (Path.cwd() / "mcp.json")
+    data: dict = {}
+    if target_path.is_file():
+        try:
+            data = json.loads(target_path.read_text(encoding="utf-8"))
+        except Exception:
+            data = {}
+
+    if "mcpServers" not in data or not isinstance(data["mcpServers"], dict):
+        data["mcpServers"] = {}
+
+    server_entry: dict = {}
+    if config.transport == "sse":
+        server_entry["url"] = config.url
+    else:
+        server_entry["command"] = config.command
+        if config.args:
+            server_entry["args"] = config.args
+        if config.env:
+            server_entry["env"] = config.env
+
+    data["mcpServers"][config.name] = server_entry
+    target_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    return target_path
+
+
+def remove_from_local_mcp_json(name: str, path: Optional[Path] = None) -> bool:
+    """Remove an MCP server from local mcp.json file."""
+    target_path = path or (Path.cwd() / "mcp.json")
+    if not target_path.is_file():
+        return False
+    try:
+        data = json.loads(target_path.read_text(encoding="utf-8"))
+        if "mcpServers" in data and name in data["mcpServers"]:
+            del data["mcpServers"][name]
+            target_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+            return True
+    except Exception:
+        pass
+    return False
