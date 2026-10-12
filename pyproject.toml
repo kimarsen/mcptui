@@ -1,0 +1,49 @@
+[project]
+name = "mcptui"
+version = "0.1.0"
+description = "The Postman for MCP — Terminal UI & playground for Model Context Protocol"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "mcptui contributors" }]
+keywords = [
+    "mcp",
+    "model-context-protocol",
+    "tui",
+    "terminal",
+    "developer-tools",
+    "ai",
+    "llm",
+    "anthropic",
+    "cursor",
+    "postman",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Testing",
+]
+dependencies = [
+    "httpx>=0.28.1",
+    "mcp>=2.3.0",
+    "pydantic>=2.10.0",
+    "pyperclip>=1.9.0",
+    "rich>=14.0.0",
+    "textual>=8.0.0",
+    "typer>=0.15.0",
+]
+
+[project.scripts]
+mcptui = "mcptui.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

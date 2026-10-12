@@ -1,0 +1,252 @@
+Screen {
+    background: #0d1117;
+    color: #c9d1d9;
+}
+
+#top-header {
+    height: 3;
+    background: #161b22;
+    border-bottom: solid #30363d;
+    padding: 0 1;
+    layout: horizontal;
+    align: left middle;
+}
+
+#brand-label {
+    text-style: bold;
+    color: #58a6ff;
+    content-align: left middle;
+}
+
+#server-pill {
+    padding: 0 1;
+    background: #21262d;
+    border: round #30363d;
+    color: #7ee787;
+    text-style: bold;
+}
+
+#server-pill.disconnected {
+    color: #f85149;
+}
+
+#header-buttons {
+    layout: horizontal;
+    width: auto;
+}
+
+#header-buttons Button {
+    margin-left: 1;
+    height: 1;
+    min-width: 14;
+    border: none;
+    background: #21262d;
+    color: #8b949e;
+}
+
+#header-buttons Button:hover {
+    background: #30363d;
+    color: #ffffff;
+}
+
+/* Tabs */
+TabbedContent {
+    height: 1fr;
+}
+
+TabPane {
+    padding: 0;
+}
+
+/* Common Split Layout */
+.split-view {
+    layout: horizontal;
+    height: 100%;
+    width: 100%;
+}
+
+.sidebar {
+    width: 32;
+    min-width: 26;
+    max-width: 44;
+    height: 100%;
+    border-right: solid #30363d;
+    background: #161b22;
+    padding: 0 1;
+}
+
+.sidebar-search {
+    dock: top;
+    margin: 1 0;
+    height: 3;
+    border: round #30363d;
+    background: #0d1117;
+}
+
+.sidebar-search:focus {
+    border: round #58a6ff;
+}
+
+.item-list {
+    height: 1fr;
+    background: transparent;
+    border: none;
+}
+
+.main-content {
+    width: 1fr;
+    height: 100%;
+    padding: 0 1;
+    layout: vertical;
+}
+
+/* Tool Header & Description */
+.item-meta-box {
+    dock: top;
+    height: auto;
+    max-height: 8;
+    background: #161b22;
+    border: round #30363d;
+    padding: 1;
+    margin-top: 1;
+}
+
+.item-title {
+    text-style: bold;
+    color: #58a6ff;
+}
+
+.item-desc {
+    color: #8b949e;
+    margin-top: 1;
+}
+
+/* Input Workspace */
+.input-section-title {
+    color: #79c0ff;
+    text-style: bold;
+    margin: 1 0 0 0;
+}
+
+.param-editor {
+    height: 10;
+    min-height: 6;
+    border: round #30363d;
+    background: #0d1117;
+    margin-bottom: 1;
+}
+
+.param-editor:focus {
+    border: round #58a6ff;
+}
+
+/* Action Controls Bar */
+.action-bar {
+    height: 3;
+    layout: horizontal;
+    align: left middle;
+    margin-bottom: 1;
+}
+
+.action-bar Button {
+    margin-right: 1;
+    height: 3;
+}
+
+#btn-execute {
+    background: #238636;
+    color: #ffffff;
+    text-style: bold;
+}
+
+#btn-execute:hover {
+    background: #2ea043;
+}
+
+#btn-copy {
+    background: #21262d;
+    color: #c9d1d9;
+}
+
+#btn-copy:hover {
+    background: #30363d;
+}
+
+#status-pill {
+    padding: 0 1;
+    color: #8b949e;
+    text-style: bold;
+    content-align: right middle;
+}
+
+#status-pill.success {
+    color: #7ee787;
+}
+
+#status-pill.error {
+    color: #f85149;
+}
+
+#status-pill.running {
+    color: #e3b341;
+}
+
+/* Response Box */
+.response-box {
+    height: 1fr;
+    border: round #30363d;
+    background: #0d1117;
+    padding: 0 1;
+}
+
+.response-box:focus {
+    border: round #58a6ff;
+}
+
+/* Log & Protocol Views */
+.log-view {
+    height: 100%;
+    width: 100%;
+    padding: 1;
+    background: #0d1117;
+}
+
+#protocol-log {
+    height: 1fr;
+    border: round #30363d;
+    background: #0d1117;
+}
+
+/* Server Switcher Modal */
+#server-modal-container {
+    width: 60;
+    height: 24;
+    background: #161b22;
+    border: thick #58a6ff;
+    padding: 1 2;
+    align: center middle;
+}
+
+#modal-title {
+    text-style: bold;
+    color: #58a6ff;
+    margin-bottom: 1;
+    content-align: center middle;
+}
+
+#server-select-list {
+    height: 12;
+    border: round #30363d;
+    background: #0d1117;
+    margin-bottom: 1;
+}
+
+.modal-buttons {
+    layout: horizontal;
+    align: center middle;
+    height: 3;
+}
+
+.modal-buttons Button {
+    margin: 0 1;
+}
