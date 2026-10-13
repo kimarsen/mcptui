@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [
-    { name = "Arsen Kim (kimarsen)", email = "gagagy1312@gmail.com" },
+    { name = "kimarsen" },
     { name = "mcptui contributors" },
 ]
 keywords = [

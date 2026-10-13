@@ -9,7 +9,9 @@
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
 [![MCP Protocol](https://img.shields.io/badge/MCP-2024--11--05-8A2BE2.svg)](https://modelcontextprotocol.io)
 [![Textual](https://img.shields.io/badge/Built%20With-Textual-green.svg)](https://textual.textualize.io)
+[![Docker](https://img.shields.io/badge/Docker-ghcr.io-2496ED.svg?logo=docker&logoColor=white)](https://github.com/kimarsen/mcptui/pkgs/container/mcptui)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/kimarsen/mcptui)
 
 </div>
 
@@ -54,7 +56,21 @@ mcptui run "python my_server.py"
 mcptui servers
 ```
 
-### 📥 Method 4: GitHub Releases (.whl packages)
+### 🐳 Method 4: Run with Docker (GitHub Packages)
+Run `mcptui` instantly without installing Python, uv, or dependencies on your system:
+```bash
+# Launch interactive demo in Docker:
+docker run -it --rm ghcr.io/kimarsen/mcptui:latest demo
+
+# Or connect to a remote MCP server via SSE:
+docker run -it --rm ghcr.io/kimarsen/mcptui:latest connect http://host.docker.internal:8000/sse
+```
+
+### ☁️ Method 5: Run in Cloud with GitHub Codespaces
+Open a preconfigured development environment directly in your browser with 1 click:  
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/kimarsen/mcptui)
+
+### 📥 Method 6: GitHub Releases (.whl packages)
 Pre-built wheels and source distributions are automatically packaged on every release. You can download them directly from the [Releases](https://github.com/kimarsen/mcptui/releases) page and install via `pip install mcptui-*.whl`.
 
 ---
@@ -226,6 +242,6 @@ mcptui remove notes
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).  
-Copyright (c) 2026 Arsen Kim (kimarsen) and mcptui contributors.
+Copyright (c) 2026 kimarsen and mcptui contributors.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies without restriction, subject to the conditions in the [LICENSE](LICENSE) file. Contributions, feedback, and stars are warmly welcome! ⭐
