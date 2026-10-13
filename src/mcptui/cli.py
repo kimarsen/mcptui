@@ -14,6 +14,13 @@ from typing import List, Optional
 # Ensure UTF-8 on Windows consoles to prevent cp1251/charmap crashes
 if sys.platform == "win32":
     try:
+        import ctypes
+        kernel32 = ctypes.windll.kernel32
+        kernel32.SetConsoleOutputCP(65001)
+        kernel32.SetConsoleCP(65001)
+    except Exception:
+        pass
+    try:
         if sys.stdout and hasattr(sys.stdout, "reconfigure"):
             sys.stdout.reconfigure(encoding="utf-8", errors="replace")
         if sys.stderr and hasattr(sys.stderr, "reconfigure"):

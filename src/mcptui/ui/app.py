@@ -43,6 +43,7 @@ class MCPTuiApp(App):
     TITLE = "mcptui"
     SUB_TITLE = "Postman for MCP"
     CSS_PATH = CSS_PATH
+    ENABLE_COMMAND_PALETTE = False
 
     BINDINGS = [
         Binding("1", "goto_tab('tab-tools')", "Tools", show=False),
@@ -181,5 +182,20 @@ class MCPTuiApp(App):
 
 def run_tui(config: Optional[ServerConfig] = None) -> None:
     """Launch the TUI application."""
+    if sys.platform == "win32":
+        try:
+            import ctypes
+            kernel32 = ctypes.windll.kernel32
+            kernel32.SetConsoleOutputCP(65001)
+            kernel32.SetConsoleCP(65001)
+        except Exception:
+            pass
+        try:
+            from textual.scrollbar import ScrollBarRender
+            ScrollBarRender.VERTICAL_BARS = ["|"] * 7 + [" "]
+            ScrollBarRender.HORIZONTAL_BARS = ["-"] * 7 + [" "]
+        except Exception:
+            pass
+
     app = MCPTuiApp(initial_config=config)
     app.run()
