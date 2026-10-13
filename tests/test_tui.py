@@ -12,15 +12,14 @@ class TestTUIApp(unittest.IsolatedAsyncioTestCase):
     async def test_tui_app_lifecycle(self):
         config = ServerConfig(
             name="demo-tui-test",
-            transport="stdio",
-            command=sys.executable,
-            args=["-m", "mcptui.demo_server"],
+            transport="inmemory",
+            source="built-in demo",
         )
         app = MCPTuiApp(initial_config=config)
 
         async with app.run_test() as pilot:
             # Wait for connection worker
-            await pilot.pause(1.5)
+            await pilot.pause(0.5)
 
             # Check that client is connected
             self.assertTrue(app.client.is_connected)

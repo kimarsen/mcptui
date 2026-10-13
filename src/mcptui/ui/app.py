@@ -87,13 +87,8 @@ class MCPTuiApp(App):
         yield Footer()
 
     def on_mount(self) -> None:
-        target_config = self.initial_config or ServerConfig(
-            name="mcptui-demo",
-            transport="stdio",
-            command=sys.executable,
-            args=["-m", "mcptui.demo_server"],
-            source="built-in demo",
-        )
+        from mcptui.cli import get_demo_config
+        target_config = self.initial_config or get_demo_config()
         self.connect_to_server(target_config)
 
     async def on_unmount(self) -> None:

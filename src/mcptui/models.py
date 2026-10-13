@@ -7,22 +7,24 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Literal, Optional
-from pydantic import BaseModel, Field
 
 
-class ServerConfig(BaseModel):
+@dataclass
+class ServerConfig:
     """Configuration for an MCP server."""
     name: str
-    transport: Literal["stdio", "sse"] = "stdio"
+    transport: Literal["stdio", "sse", "inmemory"] = "stdio"
     command: Optional[str] = None
-    args: List[str] = Field(default_factory=list)
-    env: Dict[str, str] = Field(default_factory=dict)
+    args: List[str] = field(default_factory=list)
+    env: Dict[str, str] = field(default_factory=dict)
     url: Optional[str] = None
     cwd: Optional[str] = None
     source: str = "custom"  # e.g., "claude_desktop", "cursor", "local", "cli"
 
     def display_target(self) -> str:
         """User-friendly target representation."""
+        if self.transport == "inmemory":
+            return "in-process demo"
         if self.transport == "sse":
             return self.url or "unknown URL"
         cmd = self.command or ""

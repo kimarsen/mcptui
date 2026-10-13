@@ -61,6 +61,28 @@ class TestMCPClient(unittest.TestCase):
 
         asyncio.run(run_test())
 
+    def test_client_inmemory_demo(self):
+        async def run_inmemory():
+            client = MCPClientManager()
+            config = ServerConfig(
+                name="mcptui-demo",
+                transport="inmemory",
+                source="built-in demo",
+            )
+            try:
+                await client.connect(config)
+                self.assertTrue(client.is_connected)
+                self.assertEqual(client.server_name, "mcptui-demo")
+                self.assertGreater(len(client.tools), 0)
+                rec = await client.call_tool("calculate", {"expression": "21 * 2"})
+                self.assertFalse(rec.is_error)
+                self.assertIn("42", rec.output_data["content"][0]["text"])
+            finally:
+                await client.disconnect()
+                self.assertFalse(client.is_connected)
+
+        asyncio.run(run_inmemory())
+
 
 if __name__ == "__main__":
     unittest.main()

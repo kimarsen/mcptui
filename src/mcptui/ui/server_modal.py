@@ -37,14 +37,9 @@ class ServerSwitcherModal(ModalScreen[Optional[ServerConfig]]):
 
     def on_mount(self) -> None:
         self.servers = discover_all_servers()
-        if "demo" not in self.servers:
-            self.servers["mcptui-demo"] = ServerConfig(
-                name="mcptui-demo",
-                transport="stdio",
-                command=sys.executable,
-                args=["-m", "mcptui.demo_server"],
-                source="built-in demo",
-            )
+        if "demo" not in self.servers and "mcptui-demo" not in self.servers:
+            from mcptui.cli import get_demo_config
+            self.servers["mcptui-demo"] = get_demo_config()
 
         option_list = self.query_one("#server-select-list", OptionList)
         for name, cfg in self.servers.items():

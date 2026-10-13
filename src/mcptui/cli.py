@@ -51,7 +51,7 @@ console = Console()
 def get_demo_config() -> ServerConfig:
     return ServerConfig(
         name="mcptui-demo",
-        transport="stdio",
+        transport="inmemory",
         command=sys.executable,
         args=["-m", "mcptui.demo_server"],
         source="built-in demo",

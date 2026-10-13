@@ -172,6 +172,33 @@ class MCPClientManager:
                 read_stream, write_stream = await self._exit_stack.enter_async_context(
                     sse_client(config.url)
                 )
+            elif config.transport == "inmemory":
+                # In-process direct memory transport for instant demo connection
+                from mcptui.demo_server import server as demo_server
+
+                client_to_server_writer, client_to_server_reader = anyio.create_memory_object_stream(100)
+                server_to_client_writer, server_to_client_reader = anyio.create_memory_object_stream(100)
+
+                server_task = asyncio.create_task(
+                    demo_server._lowlevel_server.run(
+                        client_to_server_reader,
+                        server_to_client_writer,
+                        demo_server._lowlevel_server.create_initialization_options(),
+                    )
+                )
+
+                async def _cleanup_inmemory() -> None:
+                    client_to_server_writer.close()
+                    server_to_client_writer.close()
+                    server_task.cancel()
+                    try:
+                        await server_task
+                    except BaseException:
+                        pass
+
+                self._exit_stack.push_async_callback(_cleanup_inmemory)
+                read_stream = server_to_client_reader
+                write_stream = client_to_server_writer
             else:
                 raise ValueError(f"Unsupported transport: {config.transport}")
 
