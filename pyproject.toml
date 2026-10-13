@@ -1,6 +1,6 @@
 [project]
 name = "mcptui"
-version = "0.1.1"
+version = "0.1.2"
 description = "The Postman for MCP — Terminal UI & playground for Model Context Protocol"
 readme = "README.md"
 requires-python = ">=3.10"
