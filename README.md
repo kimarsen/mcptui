@@ -27,15 +27,16 @@
 
 Choose whichever method you prefer:
 
-### ⚡ Method 1: Zero-Install (Run directly via `uvx`)
-If you have [`uv`](https://docs.astral.sh/uv/) installed, launch `mcptui` instantly without cloning or setting up virtual environments:
+### ⚡ Method 1: Zero-Install (`uvx`)
+`uvx` comes bundled automatically with [`uv`](https://docs.astral.sh/uv/) (just like `npx` comes with `npm`). Launch `mcptui` instantly without cloning or setting up virtual environments:
 ```bash
-# Test drive the built-in demo server:
+# Launch interactive demo playground:
 uvx mcptui demo
 
-# Connect directly to your own server script:
+# Connect directly to your own MCP server script:
 uvx mcptui run "python my_server.py"
 ```
+*(Don't have `uv` yet? Install it in 2 seconds: `powershell -c "irm https://astral.sh/uv/install.ps1 | iex"` on Windows, or `curl -LsSf https://astral.sh/uv/install.sh | sh` on macOS/Linux).*
 
 ### 📦 Method 2: Install via pip / uv tool (Standard CLI)
 ```bash
@@ -59,9 +60,6 @@ cd mcptui
 
 # 2. Launch interactive demo in 1 command
 uv run mcptui demo
-```
-*(If you don't have `uv` yet, install it via `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"` or use standard `pip install -e .`)*
-mcptui servers
 ```
 
 ### 🐳 Method 4: Run with Docker (GitHub Packages)
