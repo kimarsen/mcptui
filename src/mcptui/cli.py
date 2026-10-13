@@ -33,14 +33,12 @@ from rich import print as rprint
 from rich.console import Console
 from rich.table import Table
 
-from mcptui.client import MCPClientManager
 from mcptui.config import (
     discover_all_servers,
     remove_from_local_mcp_json,
     save_to_local_mcp_json,
 )
 from mcptui.models import ServerConfig
-from mcptui.ui.app import run_tui
 
 app = typer.Typer(
     name="mcptui",
@@ -101,6 +99,7 @@ def main_callback(
         else:
             target_config = get_demo_config()
 
+    from mcptui.ui.app import run_tui
     run_tui(target_config)
 
 
@@ -109,6 +108,7 @@ def cmd_demo():
     """
     Launch mcptui with the built-in rich demo MCP server.
     """
+    from mcptui.ui.app import run_tui
     run_tui(get_demo_config())
 
 
@@ -139,6 +139,7 @@ def cmd_run(
         args=full_args,
         source="cli:run",
     )
+    from mcptui.ui.app import run_tui
     run_tui(cfg)
 
 
@@ -150,6 +151,7 @@ def cmd_connect(
     Connect to a remote MCP server via SSE and open mcptui.
     """
     cfg = ServerConfig(name="remote-mcp", transport="sse", url=url, source="cli:connect")
+    from mcptui.ui.app import run_tui
     run_tui(cfg)
 
 
@@ -228,6 +230,7 @@ def cmd_list(
     else:
         cfg = _resolve_server(server_name)
 
+    from mcptui.client import MCPClientManager
     client = MCPClientManager()
 
     async def _inspect():
@@ -277,6 +280,7 @@ def cmd_call(
     else:
         cfg = _resolve_server(server)
 
+    from mcptui.client import MCPClientManager
     client = MCPClientManager()
 
     async def _execute():

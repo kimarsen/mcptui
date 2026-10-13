@@ -5,6 +5,7 @@ Main Textual Application for mcptui.
 from __future__ import annotations
 
 import sys
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -106,16 +107,19 @@ class MCPTuiApp(App):
         pill.update(f"[CONNECTING: {config.name}]")
         pill.remove_class("disconnected")
 
+        t0 = time.monotonic()
         try:
             await self.client.connect(config)
-            pill.update(f"[* {self.client.server_name}]")
+            duration_ms = max(1, int((time.monotonic() - t0) * 1000))
+            pill.update(f"[* {self.client.server_name}] ({duration_ms}ms)")
             pill.remove_class("disconnected")
-            self.notify(f"Connected to {self.client.server_name}!", severity="information")
+            self.notify(f"Connected to {self.client.server_name} in {duration_ms}ms!", severity="information")
             self.update_child_views()
         except Exception as exc:
-            pill.update(f"[ERR: {config.name}]")
+            duration_ms = max(1, int((time.monotonic() - t0) * 1000))
+            pill.update(f"[ERR: {config.name}] ({duration_ms}ms)")
             pill.add_class("disconnected")
-            self.notify(f"Connection failed: {exc}", severity="error")
+            self.notify(f"Connection failed ({duration_ms}ms): {exc}", severity="error")
 
     def update_child_views(self) -> None:
         """Tell child views to refresh their lists."""

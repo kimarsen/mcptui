@@ -7,7 +7,7 @@ First off, thank you for considering contributing to `mcptui`! Whether you're fi
 ## Code of Conduct & Philosophy
 
 - **ASCII / Windows First-Class Citizen:** `mcptui` must look clean and work reliably in any terminal environment, including standard Windows PowerShell and CMD without specialized patched fonts. Avoid Unicode glyphs or emojis that degrade into question mark boxes (`?`) in non-UTF-8 or fallback codepages.
-- **Type Safety & Clean GDScript/Python Standards:** Statically typed Python with type hints throughout (`mypy` / `pyright` clean).
+- **Type Safety & Clean Python Standards:** Statically typed Python with PEP 484 type hints throughout (`mypy` / `pyright` clean).
 - **Lightweight & Fast:** Keep startup latency under 100ms. Do not add heavy dependencies.
 
 ---

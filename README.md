@@ -6,12 +6,17 @@
 
 *A modern, interactive Terminal UI and playground for testing, inspecting, and debugging MCP servers.*
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
-[![MCP Protocol](https://img.shields.io/badge/MCP-2024--11--05-8A2BE2.svg)](https://modelcontextprotocol.io)
-[![Textual](https://img.shields.io/badge/Built%20With-Textual-green.svg)](https://textual.textualize.io)
-[![Docker](https://img.shields.io/badge/Docker-ghcr.io-2496ED.svg?logo=docker&logoColor=white)](https://github.com/kimarsen/mcptui/pkgs/container/mcptui)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/kimarsen/mcptui)
+<p>
+  <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.10%2B-blue.svg" alt="Python" /></a>
+  <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-2024--11--05-8A2BE2.svg" alt="MCP Protocol" /></a>
+  <a href="https://textual.textualize.io"><img src="https://img.shields.io/badge/Built%20With-Textual-green.svg" alt="Textual" /></a>
+  <a href="https://github.com/kimarsen/mcptui/pkgs/container/mcptui"><img src="https://img.shields.io/badge/Docker-ghcr.io-2496ED.svg?logo=docker&logoColor=white" alt="Docker" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" /></a>
+</p>
+
+<p>
+  <a href="https://codespaces.new/kimarsen/mcptui"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces" /></a>
+</p>
 
 </div>
 
@@ -88,7 +93,7 @@ Building and debugging **MCP (Model Context Protocol)** servers is rapidly becom
  ┌────────────────────────────────────────────────────────────────────────┐
  │ mcptui | Postman for MCP                [* mcptui-demo] (18ms)         │
  ├────────────────────────────────────────────────────────────────────────┤
- │ [1] Tools   [2] Resources   [3] Prompts   [4] Protocol Logs   [5] History │
+ │ [1] Tools  [2] Resources  [3] Prompts  [4] Protocol Logs  [5] History  │
  ├─────────────────────────┬──────────────────────────────────────────────┤
  │ Filter tools...         │ TOOL: calculate                              │
  │ ─────────────────────── │ Safe arithmetic calculation                  │
@@ -97,7 +102,7 @@ Building and debugging **MCP (Model Context Protocol)** servers is rapidly becom
  │ > system_info           │ ┌──────────────────────────────────────────┐ │
  │ > text_analyzer         │ │ { "expression": "100 * 2 + 42" }         │ │
  │ > mock_query            │ └──────────────────────────────────────────┘ │
- │                         │ [Execute (Ctrl+Enter)] [Copy Result]  OK 18ms │
+ │                         │ [Execute (Ctrl+Enter)] [Copy Result] OK 18ms │
  │                         │                                              │
  │                         │ Response                                     │
  │                         │ ┌──────────────────────────────────────────┐ │
