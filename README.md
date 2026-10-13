@@ -249,4 +249,5 @@ mcptui remove notes
 This project is licensed under the [MIT License](LICENSE).  
 Copyright (c) 2026 kimarsen and mcptui contributors.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies without restriction, subject to the conditions in the [LICENSE](LICENSE) file. Contributions, feedback, and stars are warmly welcome! ⭐
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies without restriction, subject to the conditions in the [LICENSE](LICENSE) file. 
+Contributions, feedback, and stars are warmly welcome! ⭐
