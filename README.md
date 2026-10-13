@@ -14,8 +14,8 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" /></a>
 </p>
 
-<p>
-  <a href="https://codespaces.new/kimarsen/mcptui"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces" /></a>
+<p align="center">
+  <img src="assets/demo.gif" alt="mcptui interactive demo" width="850" />
 </p>
 
 </div>
