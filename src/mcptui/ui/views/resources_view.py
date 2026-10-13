@@ -33,7 +33,7 @@ class ResourcesView(Widget):
 
     def compose(self) -> ComposeResult:
         with Container(classes="sidebar"):
-            yield Input(placeholder="🔍 Filter resources...", id="resource-search", classes="sidebar-search")
+            yield Input(placeholder="Filter resources...", id="resource-search", classes="sidebar-search")
             yield OptionList(id="resource-list", classes="item-list")
 
         with Vertical(classes="main-content"):
@@ -42,8 +42,8 @@ class ResourcesView(Widget):
                 yield Static("", id="res-desc", classes="item-desc")
 
             with Horizontal(classes="action-bar"):
-                yield Button("📖 Read Resource", variant="success", id="btn-read-res")
-                yield Button("📋 Copy Content", variant="default", id="btn-copy-res")
+                yield Button("Read Resource", variant="success", id="btn-read-res")
+                yield Button("Copy Content", variant="default", id="btn-copy-res")
                 yield Label("Status: Ready", id="res-status-pill")
 
             yield Label("Resource Content", classes="input-section-title")
@@ -70,7 +70,7 @@ class ResourcesView(Widget):
 
         for res in filtered:
             label = Text()
-            label.append("📚 ", style="green")
+            label.append("> ", style="bold green")
             label.append(res.name or str(res.uri), style="bold white")
             res_list.add_option(Option(prompt=label, id=str(res.uri)))
 
@@ -79,7 +79,7 @@ class ResourcesView(Widget):
             uri_pattern = tmpl.uriTemplate if hasattr(tmpl, "uriTemplate") else getattr(tmpl, "uri_template", "")
             if not filter_text or filter_text.lower() in uri_pattern.lower() or filter_text.lower() in (tmpl.name or "").lower():
                 label = Text()
-                label.append("📄 ", style="yellow")
+                label.append("* ", style="bold yellow")
                 label.append(tmpl.name or uri_pattern, style="italic yellow")
                 res_list.add_option(Option(prompt=label, id=f"tmpl:{uri_pattern}"))
 
@@ -115,7 +115,7 @@ class ResourcesView(Widget):
         if not res:
             return
 
-        title_label.update(f"📚 {res.name or uri}")
+        title_label.update(f"RESOURCE: {res.name or uri}")
         mime = getattr(res, "mimeType", "") or "text/plain"
         desc = getattr(res, "description", "") or ""
         desc_label.update(f"URI: {uri} | MIME: {mime}\n{desc}")

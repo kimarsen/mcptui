@@ -8,11 +8,10 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from rich.text import Text
 from textual import work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Container, Horizontal
+from textual.containers import Horizontal
 from textual.widgets import Button, Footer, Label, TabbedContent, TabPane
 
 from mcptui.client import MCPClientManager
@@ -31,10 +30,15 @@ class MCPTuiApp(App):
     """mcptui: The Postman for Model Context Protocol."""
 
     TITLE = "mcptui"
-    SUB_TITLE = "The Postman for MCP"
+    SUB_TITLE = "Postman for MCP"
     CSS_PATH = CSS_PATH
 
     BINDINGS = [
+        Binding("1", "goto_tab_1", "Tools", show=False),
+        Binding("2", "goto_tab_2", "Resources", show=False),
+        Binding("3", "goto_tab_3", "Prompts", show=False),
+        Binding("4", "goto_tab_4", "Logs", show=False),
+        Binding("5", "goto_tab_5", "History", show=False),
         Binding("f2", "switch_server", "Switch Server", show=True),
         Binding("f5", "refresh_all", "Refresh", show=True),
         Binding("ctrl+r", "refresh_all", "Refresh", show=False),
@@ -49,22 +53,22 @@ class MCPTuiApp(App):
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="top-header"):
-            yield Label("⚡ mcptui — Postman for MCP", id="brand-label")
-            yield Label("● Connecting...", id="server-pill")
+            yield Label("mcptui | Postman for MCP", id="brand-label")
+            yield Label("[CONNECTING...]", id="server-pill")
             with Horizontal(id="header-buttons"):
                 yield Button("Switch Server (F2)", id="btn-hdr-switch")
                 yield Button("Reload (F5)", id="btn-hdr-refresh")
 
         with TabbedContent(id="tabs"):
-            with TabPane("🛠 Tools", id="tab-tools"):
+            with TabPane("[1] Tools", id="tab-tools"):
                 yield ToolsView(self.client, id="tools-view")
-            with TabPane("📚 Resources", id="tab-resources"):
+            with TabPane("[2] Resources", id="tab-resources"):
                 yield ResourcesView(self.client, id="resources-view")
-            with TabPane("💬 Prompts", id="tab-prompts"):
+            with TabPane("[3] Prompts", id="tab-prompts"):
                 yield PromptsView(self.client, id="prompts-view")
-            with TabPane("⚡ Protocol Logs", id="tab-logs"):
+            with TabPane("[4] Protocol Logs", id="tab-logs"):
                 yield ProtocolLogsView(self.client, id="logs-view")
-            with TabPane("🕒 History", id="tab-history"):
+            with TabPane("[5] History", id="tab-history"):
                 yield HistoryView(self.client, id="history-view")
 
         yield Footer()
@@ -87,17 +91,17 @@ class MCPTuiApp(App):
     async def connect_to_server(self, config: ServerConfig) -> None:
         """Connect to an MCP server in the background and update UI."""
         pill = self.query_one("#server-pill", Label)
-        pill.update(f"● Connecting to {config.name}...")
+        pill.update(f"[CONNECTING: {config.name}]")
         pill.remove_class("disconnected")
 
         try:
             await self.client.connect(config)
-            pill.update(f"● {self.client.server_name} [{config.transport}]")
+            pill.update(f"[* {self.client.server_name}]")
             pill.remove_class("disconnected")
             self.notify(f"Connected to {self.client.server_name}!", severity="information")
             self.update_child_views()
         except Exception as exc:
-            pill.update(f"✖ Failed: {config.name}")
+            pill.update(f"[ERR: {config.name}]")
             pill.add_class("disconnected")
             self.notify(f"Connection failed: {exc}", severity="error")
 
@@ -115,6 +119,21 @@ class MCPTuiApp(App):
             self.query_one("#prompts-view", PromptsView).refresh_prompts()
         except Exception:
             pass
+
+    def action_goto_tab_1(self) -> None:
+        self.query_one("#tabs", TabbedContent).active = "tab-tools"
+
+    def action_goto_tab_2(self) -> None:
+        self.query_one("#tabs", TabbedContent).active = "tab-resources"
+
+    def action_goto_tab_3(self) -> None:
+        self.query_one("#tabs", TabbedContent).active = "tab-prompts"
+
+    def action_goto_tab_4(self) -> None:
+        self.query_one("#tabs", TabbedContent).active = "tab-logs"
+
+    def action_goto_tab_5(self) -> None:
+        self.query_one("#tabs", TabbedContent).active = "tab-history"
 
     def action_switch_server(self) -> None:
         """Open Server Switcher modal."""

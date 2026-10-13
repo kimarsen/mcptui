@@ -15,15 +15,17 @@ Screen {
 #brand-label {
     text-style: bold;
     color: #58a6ff;
-    content-align: left middle;
+    height: 1;
+    margin-right: 1;
 }
 
 #server-pill {
+    height: 1;
     padding: 0 1;
     background: #21262d;
-    border: round #30363d;
     color: #7ee787;
     text-style: bold;
+    margin-right: 1;
 }
 
 #server-pill.disconnected {
@@ -32,13 +34,13 @@ Screen {
 
 #header-buttons {
     layout: horizontal;
-    width: auto;
+    height: 1;
 }
 
 #header-buttons Button {
     margin-left: 1;
     height: 1;
-    min-width: 14;
+    min-width: 16;
     border: none;
     background: #21262d;
     color: #8b949e;
@@ -49,42 +51,46 @@ Screen {
     color: #ffffff;
 }
 
-/* Tabs */
+/* Tabs & Content Switcher Expansion */
 TabbedContent {
     height: 1fr;
 }
 
+ContentSwitcher {
+    height: 1fr;
+}
+
 TabPane {
+    height: 1fr;
     padding: 0;
 }
 
 /* Common Split Layout */
 .split-view {
     layout: horizontal;
-    height: 100%;
+    height: 1fr;
     width: 100%;
 }
 
 .sidebar {
-    width: 32;
-    min-width: 26;
-    max-width: 44;
-    height: 100%;
+    width: 28;
+    min-width: 24;
+    max-width: 36;
+    height: 1fr;
     border-right: solid #30363d;
     background: #161b22;
     padding: 0 1;
 }
 
 .sidebar-search {
-    dock: top;
     margin: 1 0;
     height: 3;
-    border: round #30363d;
+    border: solid #30363d;
     background: #0d1117;
 }
 
 .sidebar-search:focus {
-    border: round #58a6ff;
+    border: solid #58a6ff;
 }
 
 .item-list {
@@ -95,19 +101,19 @@ TabPane {
 
 .main-content {
     width: 1fr;
-    height: 100%;
+    height: 1fr;
     padding: 0 1;
     layout: vertical;
+    overflow-y: auto;
 }
 
 /* Tool Header & Description */
 .item-meta-box {
-    dock: top;
     height: auto;
-    max-height: 8;
+    max-height: 5;
     background: #161b22;
-    border: round #30363d;
-    padding: 1;
+    border: solid #30363d;
+    padding: 0 1;
     margin-top: 1;
 }
 
@@ -118,26 +124,25 @@ TabPane {
 
 .item-desc {
     color: #8b949e;
-    margin-top: 1;
 }
 
 /* Input Workspace */
 .input-section-title {
     color: #79c0ff;
     text-style: bold;
-    margin: 1 0 0 0;
+    margin-top: 1;
 }
 
 .param-editor {
-    height: 10;
-    min-height: 6;
-    border: round #30363d;
+    height: 6;
+    min-height: 4;
+    border: solid #30363d;
     background: #0d1117;
-    margin-bottom: 1;
+    margin-bottom: 0;
 }
 
 .param-editor:focus {
-    border: round #58a6ff;
+    border: solid #58a6ff;
 }
 
 /* Action Controls Bar */
@@ -145,7 +150,7 @@ TabPane {
     height: 3;
     layout: horizontal;
     align: left middle;
-    margin-bottom: 1;
+    margin: 1 0;
 }
 
 .action-bar Button {
@@ -163,57 +168,59 @@ TabPane {
     background: #2ea043;
 }
 
-#btn-copy {
+#btn-copy, #btn-copy-res, #btn-copy-prompt, #btn-copy-req, #btn-copy-resp {
     background: #21262d;
     color: #c9d1d9;
 }
 
-#btn-copy:hover {
+#btn-copy:hover, #btn-copy-res:hover, #btn-copy-prompt:hover, #btn-copy-req:hover, #btn-copy-resp:hover {
     background: #30363d;
 }
 
-#status-pill {
+#status-pill, #res-status-pill, #prompt-status-pill, #history-status-pill {
     padding: 0 1;
     color: #8b949e;
     text-style: bold;
     content-align: right middle;
 }
 
-#status-pill.success {
+#status-pill.success, #res-status-pill.success, #prompt-status-pill.success {
     color: #7ee787;
 }
 
-#status-pill.error {
+#status-pill.error, #res-status-pill.error, #prompt-status-pill.error {
     color: #f85149;
 }
 
-#status-pill.running {
+#status-pill.running, #res-status-pill.running, #prompt-status-pill.running {
     color: #e3b341;
 }
 
 /* Response Box */
 .response-box {
     height: 1fr;
-    border: round #30363d;
+    min-height: 6;
+    border: solid #30363d;
     background: #0d1117;
     padding: 0 1;
 }
 
 .response-box:focus {
-    border: round #58a6ff;
+    border: solid #58a6ff;
 }
 
 /* Log & Protocol Views */
 .log-view {
-    height: 100%;
+    height: 1fr;
     width: 100%;
-    padding: 1;
+    padding: 0 1;
     background: #0d1117;
+    layout: vertical;
 }
 
 #protocol-log {
     height: 1fr;
-    border: round #30363d;
+    border: solid #30363d;
     background: #0d1117;
 }
 
@@ -236,7 +243,7 @@ TabPane {
 
 #server-select-list {
     height: 12;
-    border: round #30363d;
+    border: solid #30363d;
     background: #0d1117;
     margin-bottom: 1;
 }

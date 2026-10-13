@@ -61,7 +61,7 @@ class ToolsView(Widget):
 
     def compose(self) -> ComposeResult:
         with Container(classes="sidebar"):
-            yield Input(placeholder="🔍 Filter tools...", id="tool-search", classes="sidebar-search")
+            yield Input(placeholder="Filter tools...", id="tool-search", classes="sidebar-search")
             yield OptionList(id="tool-list", classes="item-list")
 
         with Vertical(classes="main-content"):
@@ -78,8 +78,8 @@ class ToolsView(Widget):
             )
 
             with Horizontal(classes="action-bar"):
-                yield Button("▶ Execute (Ctrl+Enter)", variant="success", id="btn-execute")
-                yield Button("📋 Copy Result", variant="default", id="btn-copy")
+                yield Button("Execute (Ctrl+Enter)", variant="success", id="btn-execute")
+                yield Button("Copy Result", variant="default", id="btn-copy")
                 yield Label("Status: Ready", id="status-pill")
 
             yield Label("Response", classes="input-section-title")
@@ -106,9 +106,8 @@ class ToolsView(Widget):
         ]
 
         for tool in filtered:
-            # Highlight badge
             label = Text()
-            label.append("🛠 ", style="cyan")
+            label.append("> ", style="bold cyan")
             label.append(tool.name, style="bold white")
             tool_list.add_option(Option(prompt=label, id=tool.name))
 
@@ -136,7 +135,7 @@ class ToolsView(Widget):
             return
 
         title_label = self.query_one("#tool-title", Label)
-        title_label.update(f"🛠 {tool.name}")
+        title_label.update(f"TOOL: {tool.name}")
 
         desc_label = self.query_one("#tool-desc", Static)
         desc_label.update(tool.description or "No description provided.")

@@ -37,9 +37,9 @@ class HistoryView(Widget):
 
         with Vertical(classes="main-content"):
             with Horizontal(classes="action-bar"):
-                yield Button("📋 Copy Request", id="btn-copy-req")
-                yield Button("📋 Copy Response", id="btn-copy-resp")
-                yield Button("🧹 Clear History", id="btn-clear-history")
+                yield Button("Copy Request", id="btn-copy-req")
+                yield Button("Copy Response", id="btn-copy-resp")
+                yield Button("Clear History", id="btn-clear-history")
                 yield Label("Select an invocation to inspect details", id="history-status-pill")
 
             yield Label("Request Input", classes="input-section-title")

@@ -33,7 +33,7 @@ class PromptsView(Widget):
 
     def compose(self) -> ComposeResult:
         with Container(classes="sidebar"):
-            yield Input(placeholder="🔍 Filter prompts...", id="prompt-search", classes="sidebar-search")
+            yield Input(placeholder="Filter prompts...", id="prompt-search", classes="sidebar-search")
             yield OptionList(id="prompt-list", classes="item-list")
 
         with Vertical(classes="main-content"):
@@ -50,8 +50,8 @@ class PromptsView(Widget):
             )
 
             with Horizontal(classes="action-bar"):
-                yield Button("💬 Get Prompt", variant="success", id="btn-get-prompt")
-                yield Button("📋 Copy Messages", variant="default", id="btn-copy-prompt")
+                yield Button("Get Prompt", variant="success", id="btn-get-prompt")
+                yield Button("Copy Messages", variant="default", id="btn-copy-prompt")
                 yield Label("Status: Ready", id="prompt-status-pill")
 
             yield Label("Rendered Messages", classes="input-section-title")
@@ -79,7 +79,7 @@ class PromptsView(Widget):
 
         for p in filtered:
             label = Text()
-            label.append("💬 ", style="magenta")
+            label.append("> ", style="bold magenta")
             label.append(p.name, style="bold white")
             p_list.add_option(Option(prompt=label, id=p.name))
 
@@ -107,7 +107,7 @@ class PromptsView(Widget):
             return
 
         title_label = self.query_one("#prompt-title", Label)
-        title_label.update(f"💬 {prompt.name}")
+        title_label.update(f"PROMPT: {prompt.name}")
 
         desc_label = self.query_one("#prompt-desc", Static)
         desc_label.update(prompt.description or "No description provided.")
@@ -174,7 +174,6 @@ class PromptsView(Widget):
                 status.remove_class("running", "error")
                 status.add_class("success")
 
-                # Format rendered messages nicely in Markdown
                 output_str = ""
                 messages = record.output_data.get("messages", [])
                 for msg in messages:
@@ -187,7 +186,7 @@ class PromptsView(Widget):
                     else:
                         text_part = json.dumps(content, indent=2)
 
-                    output_str += f"### 🎭 Role: {role}\n\n{text_part}\n\n---\n\n"
+                    output_str += f"### Role: {role}\n\n{text_part}\n\n---\n\n"
 
                 viewer.text = output_str.strip() or json.dumps(record.output_data, indent=2)
         except Exception as exc:

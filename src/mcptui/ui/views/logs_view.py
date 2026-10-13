@@ -27,17 +27,15 @@ class ProtocolLogsView(Widget):
 
     def compose(self) -> ComposeResult:
         with Horizontal(classes="action-bar"):
-            yield Input(placeholder="🔍 Filter protocol logs (e.g. tools/call, initialize)...", id="log-search", classes="sidebar-search")
-            yield Button("🧹 Clear Logs", id="btn-clear-logs")
-            yield Button("📋 Copy All Logs", id="btn-copy-all-logs")
+            yield Input(placeholder="Filter logs (e.g. tools/call, initialize)...", id="log-search", classes="sidebar-search")
+            yield Button("Clear Logs", id="btn-clear-logs")
+            yield Button("Copy All Logs", id="btn-copy-all-logs")
             yield Label(f"Total: {len(self.client.protocol_logs)} messages", id="log-count-pill")
 
         yield RichLog(highlight=True, markup=True, id="protocol-log", wrap=True)
 
     def on_mount(self) -> None:
-        # Register live log callback
         self.client.set_log_callback(self.on_new_protocol_message)
-        # Populate initial logs
         rich_log = self.query_one("#protocol-log", RichLog)
         rich_log.clear()
         for msg in self.client.protocol_logs:
@@ -55,14 +53,12 @@ class ProtocolLogsView(Widget):
         time_str = msg.timestamp.strftime("%H:%M:%S.%f")[:-3]
         text_line = Text()
 
-        # Timestamp
         text_line.append(f"[{time_str}] ", style="dim white")
 
-        # Direction badge
         if msg.direction == "sent":
-            text_line.append("--> SENT    ", style="bold cyan")
+            text_line.append(">>> SENT    ", style="bold cyan")
         else:
-            text_line.append("<-- RECV    ", style="bold green")
+            text_line.append("<<< RECV    ", style="bold green")
 
         method = msg.method or msg.data.get("method")
         msg_id = msg.data.get("id")
@@ -77,7 +73,6 @@ class ProtocolLogsView(Widget):
         else:
             text_line.append(f"Message{id_str}", style="white")
 
-        # Check filter
         full_dump = json.dumps(msg.data, ensure_ascii=False)
         if self._filter_text and self._filter_text.lower() not in full_dump.lower():
             return
@@ -85,12 +80,10 @@ class ProtocolLogsView(Widget):
         try:
             rich_log = self.query_one("#protocol-log", RichLog)
             rich_log.write(text_line)
-            # Indented JSON data
             formatted_json = json.dumps(msg.data, indent=2)
             rich_log.write(Text(formatted_json, style="dim"))
-            rich_log.write(Text("─" * 60, style="dim #30363d"))
+            rich_log.write(Text("-" * 60, style="dim #30363d"))
 
-            # Update count
             count_label = self.query_one("#log-count-pill", Label)
             count_label.update(f"Total: {len(self.client.protocol_logs)} messages")
         except Exception:
