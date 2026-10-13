@@ -7,6 +7,7 @@
 *A modern, interactive Terminal UI and playground for testing, inspecting, and debugging MCP servers.*
 
 <p>
+  <a href="https://pypi.org/project/mcptui/"><img src="https://img.shields.io/pypi/v/mcptui.svg" alt="PyPI version" /></a>
   <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.10%2B-blue.svg" alt="Python" /></a>
   <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-2024--11--05-8A2BE2.svg" alt="MCP Protocol" /></a>
   <a href="https://textual.textualize.io"><img src="https://img.shields.io/badge/Built%20With-Textual-green.svg" alt="Textual" /></a>
@@ -30,13 +31,27 @@ Choose whichever method you prefer:
 If you have [`uv`](https://docs.astral.sh/uv/) installed, launch `mcptui` instantly without cloning or setting up virtual environments:
 ```bash
 # Test drive the built-in demo server:
-uvx --from git+https://github.com/kimarsen/mcptui mcptui demo
+uvx mcptui demo
 
 # Connect directly to your own server script:
-uvx --from git+https://github.com/kimarsen/mcptui mcptui run "python my_server.py"
+uvx mcptui run "python my_server.py"
 ```
 
-### 📦 Method 2: Clone & Run in PowerShell / Bash (Standard Method)
+### 📦 Method 2: Install via pip / uv tool (Standard CLI)
+```bash
+# Install globally with uv:
+uv tool install mcptui
+
+# Or with standard pip / pipx:
+pip install mcptui
+
+# Now 'mcptui' is available everywhere in your terminal:
+mcptui demo
+mcptui run "python my_server.py"
+mcptui servers
+```
+
+### 🛠 Method 3: Clone & Run in PowerShell / Bash
 ```powershell
 # 1. Clone the repository
 git clone https://github.com/kimarsen/mcptui.git
@@ -46,18 +61,6 @@ cd mcptui
 uv run mcptui demo
 ```
 *(If you don't have `uv` yet, install it via `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"` or use standard `pip install -e .`)*
-
-### 🛠 Method 3: Install Globally as a CLI Tool
-```bash
-# With uv tool:
-uv tool install --from git+https://github.com/kimarsen/mcptui mcptui
-
-# Or with pipx:
-pipx install git+https://github.com/kimarsen/mcptui.git
-
-# Now 'mcptui' is available everywhere in your terminal:
-mcptui demo
-mcptui run "python my_server.py"
 mcptui servers
 ```
 
