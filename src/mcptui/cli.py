@@ -37,7 +37,7 @@ from mcptui.ui.app import run_tui
 
 app = typer.Typer(
     name="mcptui",
-    help="⚡ mcptui: The Postman for Model Context Protocol (MCP).\nInteractive TUI & playground for inspecting, testing, and debugging MCP servers.",
+    help="mcptui: The Postman for Model Context Protocol (MCP).\nInteractive TUI & playground for inspecting, testing, and debugging MCP servers.",
     add_completion=False,
 )
 console = Console()
@@ -67,7 +67,6 @@ def main_callback(
     if ctx.invoked_subcommand is not None:
         return
 
-    # Determine initial configuration
     target_config: Optional[ServerConfig] = None
 
     if demo:
@@ -124,7 +123,6 @@ def cmd_run(
     else:
         cmd = command
 
-    # Use a descriptive name based on the target script or command
     name = _derive_friendly_name(cmd, full_args)
 
     cfg = ServerConfig(
@@ -160,7 +158,7 @@ def cmd_servers():
         rprint("or [bold cyan]mcptui add <name> <command>[/bold cyan] to register one locally.")
         return
 
-    table = Table(title="🔍 Discovered MCP Servers", show_header=True, header_style="bold cyan")
+    table = Table(title="Discovered MCP Servers", show_header=True, header_style="bold cyan")
     table.add_column("Name", style="bold white")
     table.add_column("Transport", style="magenta")
     table.add_column("Target / Command", style="green")
@@ -191,7 +189,7 @@ def cmd_add(
         cfg = ServerConfig(name=name, transport="stdio", command=cmd, args=args, source="local:mcp.json")
 
     file_path = save_to_local_mcp_json(cfg)
-    rprint(f"[bold green]✔ Saved server '{name}' to {file_path.name}![/bold green]")
+    rprint(f"[bold green]Saved server '{name}' to {file_path.name}![/bold green]")
     rprint(f"You can now run [bold cyan]mcptui --server {name}[/bold cyan] or inspect with [bold cyan]mcptui list {name}[/bold cyan].")
 
 
@@ -203,7 +201,7 @@ def cmd_remove(
     Remove an MCP server from local mcp.json.
     """
     if remove_from_local_mcp_json(name):
-        rprint(f"[bold green]✔ Server '{name}' removed from mcp.json.[/bold green]")
+        rprint(f"[bold green]Server '{name}' removed from mcp.json.[/bold green]")
     else:
         rprint(f"[bold yellow]Server '{name}' not found in local mcp.json.[/bold yellow]")
 
@@ -231,19 +229,19 @@ def cmd_list(
 
         try:
             # Tools
-            rprint(f"\n[bold green]🛠 Tools ({len(client.tools)}):[/bold green]")
+            rprint(f"\n[bold green]Tools ({len(client.tools)}):[/bold green]")
             for t in client.tools:
-                rprint(f"  • [bold white]{t.name}[/bold white]: {t.description or 'No description'}")
+                rprint(f"  * [bold white]{t.name}[/bold white]: {t.description or 'No description'}")
 
             # Resources
-            rprint(f"\n[bold blue]📚 Resources ({len(client.resources)}):[/bold blue]")
+            rprint(f"\n[bold blue]Resources ({len(client.resources)}):[/bold blue]")
             for r in client.resources:
-                rprint(f"  • [bold white]{r.name or str(r.uri)}[/bold white] ([dim]{r.uri}[/dim])")
+                rprint(f"  * [bold white]{r.name or str(r.uri)}[/bold white] ([dim]{r.uri}[/dim])")
 
             # Prompts
-            rprint(f"\n[bold magenta]💬 Prompts ({len(client.prompts)}):[/bold magenta]")
+            rprint(f"\n[bold magenta]Prompts ({len(client.prompts)}):[/bold magenta]")
             for p in client.prompts:
-                rprint(f"  • [bold white]{p.name}[/bold white]: {p.description or 'No description'}")
+                rprint(f"  * [bold white]{p.name}[/bold white]: {p.description or 'No description'}")
         finally:
             await client.disconnect()
 

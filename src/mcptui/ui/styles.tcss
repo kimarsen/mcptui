@@ -52,7 +52,7 @@ Screen {
 }
 
 /* Tabs & Content Switcher Expansion */
-TabbedContent {
+TabbedContent, SafeTabbedContent {
     height: 1fr;
 }
 
@@ -145,17 +145,32 @@ TabPane {
     border: solid #58a6ff;
 }
 
-/* Action Controls Bar */
+/* Action Controls Bar - Flat Buttons without Unicode block shadows */
 .action-bar {
-    height: 3;
+    height: 1;
     layout: horizontal;
     align: left middle;
     margin: 1 0;
 }
 
+Button {
+    height: 1;
+    min-width: 14;
+    border: none;
+    background: #21262d;
+    color: #c9d1d9;
+    padding: 0 1;
+}
+
+Button:hover {
+    background: #30363d;
+}
+
 .action-bar Button {
     margin-right: 1;
-    height: 3;
+    height: 1;
+    border: none;
+    padding: 0 1;
 }
 
 #btn-execute {
@@ -166,15 +181,6 @@ TabPane {
 
 #btn-execute:hover {
     background: #2ea043;
-}
-
-#btn-copy, #btn-copy-res, #btn-copy-prompt, #btn-copy-req, #btn-copy-resp {
-    background: #21262d;
-    color: #c9d1d9;
-}
-
-#btn-copy:hover, #btn-copy-res:hover, #btn-copy-prompt:hover, #btn-copy-req:hover, #btn-copy-resp:hover {
-    background: #30363d;
 }
 
 #status-pill, #res-status-pill, #prompt-status-pill, #history-status-pill {
@@ -229,7 +235,7 @@ TabPane {
     width: 60;
     height: 24;
     background: #161b22;
-    border: thick #58a6ff;
+    border: solid #58a6ff;
     padding: 1 2;
     align: center middle;
 }
@@ -251,9 +257,11 @@ TabPane {
 .modal-buttons {
     layout: horizontal;
     align: center middle;
-    height: 3;
+    height: 1;
 }
 
 .modal-buttons Button {
     margin: 0 1;
+    height: 1;
+    border: none;
 }

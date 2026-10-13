@@ -59,7 +59,7 @@ def weather(city: str, units: str = "celsius") -> str:
     """Mock weather lookup."""
     temp_c = 18 + (hash(city.lower()) % 15)
     temp = temp_c if units.lower() == "celsius" else round(temp_c * 9 / 5 + 32, 1)
-    symbol = "°C" if units.lower() == "celsius" else "°F"
+    symbol = "C" if units.lower() == "celsius" else "F"
     conditions = ["Sunny", "Partly Cloudy", "Rainy", "Overcast", "Windy"]
     condition = conditions[abs(hash(city)) % len(conditions)]
 
@@ -154,7 +154,7 @@ def get_system_specs() -> str:
 @server.resource(uri="help://quickstart.md", name="MCP Quickstart Guide", mime_type="text/markdown")
 def get_quickstart_guide() -> str:
     """Markdown quickstart guide resource."""
-    return """# Welcome to mcptui! 🚀
+    return """# Welcome to mcptui!
 
 `mcptui` is the **Postman for Model Context Protocol (MCP)**.
 

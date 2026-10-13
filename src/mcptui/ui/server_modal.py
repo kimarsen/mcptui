@@ -37,7 +37,6 @@ class ServerSwitcherModal(ModalScreen[Optional[ServerConfig]]):
 
     def on_mount(self) -> None:
         self.servers = discover_all_servers()
-        # Always make sure Demo Server is an option
         if "demo" not in self.servers:
             self.servers["mcptui-demo"] = ServerConfig(
                 name="mcptui-demo",
@@ -50,7 +49,7 @@ class ServerSwitcherModal(ModalScreen[Optional[ServerConfig]]):
         option_list = self.query_one("#server-select-list", OptionList)
         for name, cfg in self.servers.items():
             label = Text()
-            label.append("● ", style="green" if cfg.source == "built-in demo" else "cyan")
+            label.append("* ", style="bold green" if cfg.source == "built-in demo" else "bold cyan")
             label.append(name, style="bold white")
             label.append(f" ({cfg.source})", style="dim italic")
             label.append(f" - {cfg.display_target()}", style="dim")
