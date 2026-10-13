@@ -3,6 +3,7 @@ import sys
 import unittest
 from mcptui.models import ServerConfig
 from mcptui.ui.app import MCPTuiApp
+from mcptui.ui.views.resources_view import ResourcesView
 from mcptui.ui.views.tools_view import ToolsView
 from textual.widgets import TextArea
 
@@ -41,7 +42,17 @@ class TestTUIApp(unittest.IsolatedAsyncioTestCase):
             # Switch tabs to Resources
             tabs = app.query_one("#tabs")
             tabs.active = "tab-resources"
-            await pilot.pause(0.3)
+            await pilot.pause(0.5)
+
+            # Check resources view and test double-click on resource title
+            resources_view = app.query_one("#resources-view", ResourcesView)
+            self.assertGreater(len(resources_view._all_uris), 0)
+
+            await pilot.double_click("#res-title")
+            await pilot.pause(1.0)
+
+            res_viewer = resources_view.query_one("#res-content-viewer", TextArea)
+            self.assertIn("python", res_viewer.text)
 
             # Switch tabs to Protocol Logs
             tabs.active = "tab-logs"

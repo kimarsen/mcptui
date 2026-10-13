@@ -211,10 +211,11 @@ mcptui remove notes
 
 ## ⌨️ Keybindings
 
-| Key | Action |
-|-----|--------|
+| Key / Mouse | Action |
+|-------------|--------|
 | `1` – `5` | Switch active tab (Tools, Resources, Prompts, Logs, History) |
 | `Ctrl + Enter` | Execute active tool / Read resource / Get prompt |
+| `Double-Click` | Double-click resource title or list item to immediately READ resource |
 | `F2` | Open Server Switcher modal |
 | `F5` / `Ctrl + R` | Reload server capabilities |
 | `Tab` / `Shift + Tab` | Navigate between sidebar, editor, and response view |
@@ -224,4 +225,7 @@ mcptui remove notes
 
 ## 📄 License
 
-MIT License. Contributions, feedback, and stars are warmly welcome! ⭐
+This project is licensed under the [MIT License](LICENSE).  
+Copyright (c) 2026 Arsen Kim (kimarsen) and mcptui contributors.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies without restriction, subject to the conditions in the [LICENSE](LICENSE) file. Contributions, feedback, and stars are warmly welcome! ⭐

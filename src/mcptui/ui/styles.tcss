@@ -141,6 +141,11 @@ TextArea:focus {
     color: #58a6ff;
 }
 
+#res-title:hover {
+    color: #79c0ff;
+    text-style: bold underline;
+}
+
 .item-desc {
     color: #8b949e;
 }

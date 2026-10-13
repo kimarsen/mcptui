@@ -1,11 +1,14 @@
 [project]
 name = "mcptui"
-version = "0.1.0"
+version = "0.1.1"
 description = "The Postman for MCP — Terminal UI & playground for Model Context Protocol"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "mcptui contributors" }]
+authors = [
+    { name = "Arsen Kim (kimarsen)", email = "gagagy1312@gmail.com" },
+    { name = "mcptui contributors" },
+]
 keywords = [
     "mcp",
     "model-context-protocol",

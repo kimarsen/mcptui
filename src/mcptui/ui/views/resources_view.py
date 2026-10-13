@@ -5,10 +5,12 @@ Resources explorer and viewer for MCP.
 from __future__ import annotations
 
 import json
+import time
 from typing import List, Optional
 
 import pyperclip
 from rich.text import Text
+from textual import events
 from textual.app import ComposeResult
 from textual.containers import Container, Horizontal, Vertical
 from textual.reactive import reactive
@@ -30,6 +32,8 @@ class ResourcesView(Widget):
         super().__init__(**kwargs)
         self.client = client
         self._all_uris: List[str] = []
+        self._last_title_click_time: float = 0.0
+        self._last_list_click_time: float = 0.0
 
     def compose(self) -> ComposeResult:
         with Container(classes="sidebar"):
@@ -108,6 +112,7 @@ class ResourcesView(Widget):
         if uri.startswith("tmpl:"):
             pattern = uri[5:]
             title_label.update(f"Template: {pattern}")
+            title_label.tooltip = "Resource Template (dynamic URI pattern)"
             desc_label.update("Resource Template (dynamic URI pattern)")
             return
 
@@ -116,6 +121,7 @@ class ResourcesView(Widget):
             return
 
         title_label.update(f"RESOURCE: {res.name or uri}")
+        title_label.tooltip = f"Double-click to read: {res.name or uri}"
         mime = getattr(res, "mimeType", "") or "text/plain"
         desc = getattr(res, "description", "") or ""
         desc_label.update(f"URI: {uri} | MIME: {mime}\n{desc}")
@@ -123,6 +129,30 @@ class ResourcesView(Widget):
         status = self.query_one("#res-status-pill", Label)
         status.update("Status: Ready")
         status.remove_class("success", "error", "running")
+
+    async def on_click(self, event: events.Click) -> None:
+        """Handle click events, triggering resource reading on double click."""
+        target = event.widget
+        if not target:
+            return
+
+        now = time.monotonic()
+        # Double-click on resource title in the open tab
+        if target.id == "res-title" or target.has_class("item-title") or target.id == "item-meta-box":
+            if event.chain >= 2 or (now - self._last_title_click_time <= 0.8):
+                await self.read_current_resource()
+                self._last_title_click_time = 0.0
+                return
+            self._last_title_click_time = now
+            return
+
+        # Double-click on resource list in the sidebar
+        if target.id == "resource-list" or any(getattr(a, "id", None) == "resource-list" for a in getattr(target, "ancestors", [])):
+            if event.chain >= 2 or (now - self._last_list_click_time <= 0.8):
+                await self.read_current_resource()
+                self._last_list_click_time = 0.0
+                return
+            self._last_list_click_time = now
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "btn-read-res":
