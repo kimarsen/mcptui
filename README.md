@@ -1,49 +1,87 @@
-# ⚡ mcptui
+# mcptui
 
 <div align="center">
 
 <h3><b>The Postman for Model Context Protocol (MCP)</b></h3>
 
-*A modern, interactive Terminal UI and playground for testing, inspecting, and benchmarking MCP servers.*
+*A modern, interactive Terminal UI and playground for testing, inspecting, and debugging MCP servers.*
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
 [![MCP Protocol](https://img.shields.io/badge/MCP-2024--11--05-8A2BE2.svg)](https://modelcontextprotocol.io)
 [![Textual](https://img.shields.io/badge/Built%20With-Textual-green.svg)](https://textual.textualize.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-<br/>
+</div>
 
+---
+
+## 🚀 How to Run mcptui (Quickstart)
+
+Choose whichever method you prefer:
+
+### ⚡ Method 1: Zero-Install (Run directly via `uvx`)
+If you have [`uv`](https://docs.astral.sh/uv/) installed, launch `mcptui` instantly without cloning or setting up virtual environments:
 ```bash
-# Try it right now with zero installation:
-uvx mcptui demo
+# Test drive the built-in demo server:
+uvx --from git+https://github.com/kimarsen/mcptui mcptui demo
+
+# Connect directly to your own server script:
+uvx --from git+https://github.com/kimarsen/mcptui mcptui run "python my_server.py"
 ```
 
-</div>
+### 📦 Method 2: Clone & Run in PowerShell / Bash (Standard Method)
+```powershell
+# 1. Clone the repository
+git clone https://github.com/kimarsen/mcptui.git
+cd mcptui
+
+# 2. Launch interactive demo in 1 command
+uv run mcptui demo
+```
+*(If you don't have `uv` yet, install it via `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"` or use standard `pip install -e .`)*
+
+### 🛠 Method 3: Install Globally as a CLI Tool
+```bash
+# With uv tool:
+uv tool install --from git+https://github.com/kimarsen/mcptui mcptui
+
+# Or with pipx:
+pipx install git+https://github.com/kimarsen/mcptui.git
+
+# Now 'mcptui' is available everywhere in your terminal:
+mcptui demo
+mcptui run "python my_server.py"
+mcptui servers
+```
+
+### 📥 Method 4: GitHub Releases (.whl packages)
+Pre-built wheels and source distributions are automatically packaged on every release. You can download them directly from the [Releases](https://github.com/kimarsen/mcptui/releases) page and install via `pip install mcptui-*.whl`.
 
 ---
 
 ## 🎯 Why mcptui?
 
-Building and debugging **MCP (Model Context Protocol)** servers is rapidly becoming a core task for AI developers. But today, inspecting servers is painful:
+Building and debugging **MCP (Model Context Protocol)** servers is rapidly becoming a core workflow for AI developers. But today, testing servers is painful:
 - You have to edit `claude_desktop_config.json` and restart Claude Desktop repeatedly.
-- Or you have to write custom JSON-RPC scripts to test if a tool handles arguments properly.
+- You waste money and time on LLM token costs just to check if a simple function runs without syntax errors.
+- Official web inspectors require Node.js, launch heavy browser tabs (`localhost:5173`), and don't fit into terminal workflows.
 
-**`mcptui` fixes this completely.** It gives you a dedicated, beautiful **Terminal UI (TUI)** playground to test tools, inspect schemas, browse resources, preview prompts, and watch live JSON-RPC 2.0 traffic in real time.
+**`mcptui` fixes this completely.** It gives you a dedicated, keyboard-driven **Terminal UI (TUI)** playground to test tools, inspect schemas, browse resources, preview prompts, and watch live JSON-RPC 2.0 traffic in real time with zero token costs.
 
 ```
  ┌────────────────────────────────────────────────────────────────────────┐
- │ ⚡ mcptui — Postman for MCP             ● mcptui-demo [stdio] (24ms)   │
+ │ mcptui | Postman for MCP                [* mcptui-demo] (18ms)         │
  ├────────────────────────────────────────────────────────────────────────┤
- │ [1] 🛠 Tools   [2] 📚 Resources   [3] 💬 Prompts   [4] ⚡ Logs   [5] 🕒 History  │
+ │ [1] Tools   [2] Resources   [3] Prompts   [4] Protocol Logs   [5] History │
  ├─────────────────────────┬──────────────────────────────────────────────┤
- │ 🔍 Filter tools...      │ 🛠 calculate                                 │
+ │ Filter tools...         │ TOOL: calculate                              │
  │ ─────────────────────── │ Safe arithmetic calculation                  │
- │ 🛠 calculate             │                                              │
- │ 🛠 weather               │ Arguments (JSON)                             │
- │ 🛠 system_info           │ ┌──────────────────────────────────────────┐ │
- │ 🛠 text_analyzer         │ │ { "expression": "100 * 2 + 42" }         │ │
- │ 🛠 mock_query            │ └──────────────────────────────────────────┘ │
- │                         │ [▶ Execute (Ctrl+Enter)] [📋 Copy]  ✅ 18ms  │
+ │ > calculate             │                                              │
+ │ > weather               │ Arguments (JSON)                             │
+ │ > system_info           │ ┌──────────────────────────────────────────┐ │
+ │ > text_analyzer         │ │ { "expression": "100 * 2 + 42" }         │ │
+ │ > mock_query            │ └──────────────────────────────────────────┘ │
+ │                         │ [Execute (Ctrl+Enter)] [Copy Result]  OK 18ms │
  │                         │                                              │
  │                         │ Response                                     │
  │                         │ ┌──────────────────────────────────────────┐ │
@@ -54,38 +92,60 @@ Building and debugging **MCP (Model Context Protocol)** servers is rapidly becom
 
 ---
 
-## 🚀 Quickstart
+## 🛠 Building Your First MCP Server in 2 Minutes
 
-You don't need to install anything if you have [`uv`](https://docs.astral.sh/uv/):
+Want to create your own MCP server and test it with `mcptui`? Here is the complete minimal guide:
 
-### 1. Test Drive with Built-in Demo Server
+### Step 1: Install the MCP Python SDK
 ```bash
-uvx mcptui demo
-```
-*Launches an embedded mock server with tools (math, weather, system stats, mock SQL), resources, and prompt templates.*
-
-### 2. Connect to Any Local Command (stdio)
-```bash
-# Node / NPX servers:
-uvx mcptui run "npx -y @modelcontextprotocol/server-filesystem /path/to/dir"
-
-# Python servers:
-uvx mcptui run "python my_mcp_server.py"
-
-# uv / pipx:
-uvx mcptui run "uv run server.py"
+pip install mcp
+# or with uv:
+uv add mcp
 ```
 
-### 3. Connect to Remote SSE Server
-```bash
-uvx mcptui connect http://localhost:8000/sse
+### Step 2: Write your server (`my_server.py`)
+```python
+import asyncio
+from mcp.server.mcpserver import MCPServer
+
+# 1. Initialize server
+server = MCPServer("my-first-server")
+
+# 2. Expose a tool that AI agents can execute
+@server.tool(name="calculate_discount", description="Calculate price after applying percentage discount")
+def calculate_discount(price: float, discount_percent: float) -> str:
+    discounted = price * (1.0 - (discount_percent / 100.0))
+    return f"Original: ${price}, Discount: {discount_percent}%, Final Price: ${round(discounted, 2)}"
+
+# 3. Expose a static data resource
+@server.resource(uri="store://catalog", name="Store Catalog", mime_type="application/json")
+def get_catalog() -> str:
+    return '{"items": ["Laptop", "Mouse", "Keyboard"], "status": "in_stock"}'
+
+# 4. Run over standard input/output (stdio)
+if __name__ == "__main__":
+    asyncio.run(server.run_stdio_async())
 ```
 
-### 4. Auto-Discovery Mode
+### Step 3: Test and Debug Live in mcptui
 ```bash
-uvx mcptui
+uv run mcptui run "python my_server.py"
 ```
-*Automatically finds all MCP servers configured in **Claude Desktop**, **Cursor** (`.cursor/mcp.json`), **Cline**, and local `mcp.json`!*
+*Your new tool `calculate_discount` and resource `store://catalog` will instantly appear in the TUI! Fill in parameters, press `Ctrl+Enter`, and verify the output in 20ms.*
+
+### Step 4: Connect to Claude Desktop or Cursor
+Save it into your local `mcp.json` or `%APPDATA%\Claude\claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "my-store-server": {
+      "command": "python",
+      "args": ["path/to/my_server.py"]
+    }
+  }
+}
+```
+*(Or simply run `mcptui add my-store-server "python path/to/my_server.py"` and mcptui will register it for you!)*
 
 ---
 
@@ -94,8 +154,8 @@ uvx mcptui
 - 🛠 **Interactive Tool Workspace**:
   - Auto-generates clean JSON parameter templates from tool `inputSchema`.
   - In-terminal JSON editor with error validation.
-  - One-click execution (`Ctrl+Enter`) with live duration & latency measurement.
-  - Pretty-printed, syntax-highlighted output with clipboard copying (`c`).
+  - One-click execution (`Ctrl+Enter`) with live duration & latency measurement (`OK 18ms`).
+  - Pretty-printed, syntax-highlighted output with clipboard copying.
 
 - 📚 **Resource Explorer**:
   - Browse available server resources and dynamic URI templates.
@@ -103,10 +163,10 @@ uvx mcptui
 
 - 💬 **Prompt Inspector**:
   - Test prompt templates with dynamic argument substitution.
-  - Preview generated message sequences (System, User, Assistant).
+  - Preview generated message sequences (System, User, Assistant) before sending them to LLMs.
 
 - 🕵️ **Live JSON-RPC 2.0 Traffic Inspector**:
-  - Intercepts and logs all raw protocol packets (`--> SENT` and `<-- RECEIVED`).
+  - Intercepts and logs all raw protocol packets (`>>> SENT` and `<<< RECV`).
   - Search and filter messages by method (`tools/call`, `initialize`, etc.).
   - Protocol latency, request/response matching, and packet export.
 
@@ -115,18 +175,18 @@ uvx mcptui
   - Easily copy previous requests or inspect errors.
 
 - 🔍 **Auto-Discovery & Local Server Management**:
-  - Scans system paths for:
+  - Automatically scans and imports configurations from:
     - **Claude Desktop** (`claude_desktop_config.json` on macOS, Windows, Linux)
     - **Cursor** (`.cursor/mcp.json` & global settings)
     - Local project `mcp.json` / `.mcp.json`
-  - Register any server with `mcptui add <name> <command>`.
+  - Register any server permanently with `mcptui add <name> <command>`.
   - Switch between servers on the fly with `F2`.
 
 ---
 
 ## 🤖 Headless CLI & Automation
 
-`mcptui` is also a powerful headless CLI for scripting and CI/CD testing:
+`mcptui` also works as a scriptable headless CLI for automated testing and CI/CD pipelines:
 
 ```bash
 # Register a server into local mcp.json permanently
@@ -153,44 +213,12 @@ mcptui remove notes
 
 | Key | Action |
 |-----|--------|
+| `1` – `5` | Switch active tab (Tools, Resources, Prompts, Logs, History) |
 | `Ctrl + Enter` | Execute active tool / Read resource / Get prompt |
 | `F2` | Open Server Switcher modal |
 | `F5` / `Ctrl + R` | Reload server capabilities |
 | `Tab` / `Shift + Tab` | Navigate between sidebar, editor, and response view |
-| `1` – `5` | Switch tabs (Tools, Resources, Prompts, Logs, History) |
-| `c` | Copy result to system clipboard |
 | `Ctrl + Q` / `q` | Quit mcptui |
-
----
-
-## 📦 Installation Options
-
-### Using `uv` (Recommended)
-```bash
-uv tool install mcptui
-```
-
-### Using `pipx`
-```bash
-pipx install mcptui
-```
-
-### Using standard `pip`
-```bash
-pip install mcptui
-```
-
----
-
-## 🛠 Local Development
-
-```bash
-git clone https://github.com/<your-username>/mcptui.git
-cd mcptui
-uv sync
-uv run pytest
-uv run mcptui demo
-```
 
 ---
 

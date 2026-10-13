@@ -168,6 +168,58 @@ Happy debugging!
 """
 
 
+@server.resource(uri="help://build-server.md", name="How to Build Your Own MCP Server", mime_type="text/markdown")
+def get_build_server_guide() -> str:
+    """Complete guide on creating custom MCP servers."""
+    return """# How to Build Your Own MCP Server (in 2 Minutes)
+
+MCP (Model Context Protocol) connects AI assistants (Claude, Cursor) to your code, APIs, and data.
+
+## 1. Install dependencies
+```bash
+pip install mcp
+# or with uv:
+uv add mcp
+```
+
+## 2. Write your server (my_server.py)
+```python
+import asyncio
+from mcp.server.mcpserver import MCPServer
+
+# Create server instance
+server = MCPServer("my-service")
+
+# Define a tool (function AI can execute)
+@server.tool(name="greet", description="Send a friendly greeting")
+def greet(name: str) -> str:
+    return f"Hello, {name}! Your MCP server is working."
+
+# Run the server over stdio
+if __name__ == "__main__":
+    asyncio.run(server.run_stdio_async())
+```
+
+## 3. Test and debug it instantly in mcptui
+```bash
+mcptui run "python my_server.py"
+```
+
+## 4. Connect to Claude Desktop or Cursor
+Add it to your `mcp.json` or `claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "my-service": {
+      "command": "python",
+      "args": ["path/to/my_server.py"]
+    }
+  }
+}
+```
+"""
+
+
 # Prompts
 @server.prompt(
     name="code_review",
