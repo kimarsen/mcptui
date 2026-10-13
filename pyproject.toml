@@ -44,6 +44,11 @@ dependencies = [
     "typer>=0.15.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/kimarsen/mcptui"
+Repository = "https://github.com/kimarsen/mcptui"
+Issues = "https://github.com/kimarsen/mcptui/issues"
+
 [project.scripts]
 mcptui = "mcptui.cli:main"
 
