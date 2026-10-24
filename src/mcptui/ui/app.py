@@ -54,6 +54,7 @@ class MCPTuiApp(App):
         Binding("5", "goto_tab('tab-history')", "History", show=False),
         Binding("f2", "switch_server", "Switch Server", show=True),
         Binding("f5", "refresh_all", "Refresh", show=True),
+        Binding("f6", "health_check", "Test (F6)", show=True),
         Binding("ctrl+r", "refresh_all", "Refresh", show=False),
         Binding("ctrl+q", "quit", "Quit", show=True),
         Binding("q", "quit", "Quit", show=False),
@@ -69,6 +70,7 @@ class MCPTuiApp(App):
             yield Label("mcptui | Postman for MCP", id="brand-label")
             yield Label("[CONNECTING...]", id="server-pill")
             with Horizontal(id="header-buttons"):
+                yield Button("Test (F6)", id="btn-hdr-test")
                 yield Button("Switch Server (F2)", id="btn-hdr-switch")
                 yield Button("Reload (F5)", id="btn-hdr-refresh")
 
@@ -143,6 +145,13 @@ class MCPTuiApp(App):
         tabs = self.query_one("#tabs", SafeTabbedContent)
         tabs.active = tab_id
 
+    def action_health_check(self) -> None:
+        """Open Health Check & Test Runner modal."""
+        from mcptui.cli import get_demo_config
+        from mcptui.ui.health_modal import HealthCheckModal
+        target_cfg = self.client.config or self.initial_config or get_demo_config()
+        self.push_screen(HealthCheckModal(target_cfg))
+
     def action_switch_server(self) -> None:
         """Open Server Switcher modal."""
         def on_modal_result(selected_cfg: Optional[ServerConfig]) -> None:
@@ -165,7 +174,9 @@ class MCPTuiApp(App):
             self.notify(f"Refresh failed: {exc}", severity="error")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "btn-hdr-switch":
+        if event.button.id == "btn-hdr-test":
+            self.action_health_check()
+        elif event.button.id == "btn-hdr-switch":
             self.action_switch_server()
         elif event.button.id == "btn-hdr-refresh":
             self.action_refresh_all()

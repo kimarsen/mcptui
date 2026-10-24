@@ -300,3 +300,44 @@ Button:hover {
     height: 1;
     border: none;
 }
+
+/* Health Check Modal */
+#health-modal-container {
+    width: 76;
+    height: 28;
+    background: #161b22;
+    border: solid #58a6ff;
+    padding: 1 2;
+    layout: vertical;
+}
+
+#health-title {
+    text-style: bold;
+    color: #58a6ff;
+    content-align: center middle;
+    margin-bottom: 1;
+}
+
+#health-summary-pill {
+    padding: 0 1;
+    background: #21262d;
+    color: #58a6ff;
+    text-style: bold;
+    margin-bottom: 1;
+    content-align: center middle;
+}
+
+#health-summary-pill.success {
+    color: #7ee787;
+}
+
+#health-summary-pill.failure {
+    color: #f85149;
+}
+
+#health-results-list {
+    height: 1fr;
+    border: solid #30363d;
+    background: #0d1117;
+    margin-bottom: 1;
+}

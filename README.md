@@ -179,6 +179,13 @@ Save it into your local `mcp.json` or `%APPDATA%\Claude\claude_desktop_config.js
   - One-click execution (`Ctrl+Enter`) with live duration & latency measurement (`OK 18ms`).
   - Pretty-printed, syntax-highlighted output with clipboard copying.
 
+- 🧪 **CI/CD Test Runner & Protocol Compliance Checker (`mcptui test`)**:
+  - Validates protocol handshake, tool `inputSchema` specifications, resource URIs, and prompts.
+  - Benchmarks RPC roundtrip latency with min/avg/max diagnostics.
+  - Exits with `0` on success, `1` on failure — perfect for **GitHub Actions** and CI pipelines!
+  - Supports `--json` flag for machine-readable test summaries.
+  - Interactive Health Check modal in the TUI (`F6` or button `Test`).
+
 - 📚 **Resource Explorer**:
   - Browse available server resources and dynamic URI templates.
   - Read resources with automatic syntax detection (Markdown, JSON, Plain Text).
@@ -208,9 +215,14 @@ Save it into your local `mcp.json` or `%APPDATA%\Claude\claude_desktop_config.js
 
 ## 🤖 Headless CLI & Automation
 
-`mcptui` also works as a scriptable headless CLI for automated testing and CI/CD pipelines:
+`mcptui` also works as a scriptable headless CLI and test runner for automated testing and CI/CD pipelines:
 
 ```bash
+# Automated compliance testing & latency benchmark (exits 0 on success, 1 on fail)
+mcptui test "python my_server.py"
+mcptui test http://localhost:8000/sse
+mcptui test demo --json
+
 # Register a server into local mcp.json permanently
 mcptui add notes "python examples/sample_server.py"
 
@@ -240,6 +252,7 @@ mcptui remove notes
 | `Double-Click` | Double-click resource title or list item to immediately READ resource |
 | `F2` | Open Server Switcher modal |
 | `F5` / `Ctrl + R` | Reload server capabilities |
+| `F6` | Run MCP Server Health Check & Compliance Test runner |
 | `Tab` / `Shift + Tab` | Navigate between sidebar, editor, and response view |
 | `Ctrl + Q` / `q` | Quit mcptui |
 

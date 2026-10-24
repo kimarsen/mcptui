@@ -91,7 +91,9 @@ class MCPClientManager:
         # Server metadata
         self.server_name: str = ""
         self.server_version: str = ""
+        self.protocol_version: str = ""
         self.instructions: str = ""
+        self.capabilities: Any = None
 
         # Discovered items
         self.tools: List[Tool] = []
@@ -216,6 +218,13 @@ class MCPClientManager:
             else:
                 self.server_name = config.name
 
+            self.protocol_version = (
+                getattr(self.session, "protocol_version", "")
+                or getattr(init_result, "protocol_version", "")
+                or getattr(init_result, "protocolVersion", "")
+                or ""
+            )
+            self.capabilities = getattr(self.session, "server_capabilities", None) or getattr(init_result, "capabilities", None)
             self.instructions = getattr(init_result, "instructions", "") or ""
             self.is_connected = True
 

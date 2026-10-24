@@ -142,7 +142,8 @@ class ToolsView(Widget):
 
         # Generate sample template
         editor = self.query_one("#tool-params-editor", TextArea)
-        schema = tool.inputSchema if hasattr(tool, "inputSchema") and isinstance(tool.inputSchema, dict) else {}
+        raw_schema = getattr(tool, "input_schema", None) or getattr(tool, "inputSchema", None)
+        schema = raw_schema if isinstance(raw_schema, dict) else {}
         template = generate_template_from_schema(schema)
         editor.text = template
 

@@ -299,6 +299,69 @@ def cmd_call(
     asyncio.run(_execute())
 
 
+@app.command(name="test")
+def cmd_test(
+    target: Optional[str] = typer.Argument(
+        None,
+        help="Target to test: server name ('demo'), stdio command ('python server.py'), or SSE URL ('http://.../sse')",
+    ),
+    cmd: Optional[str] = typer.Option(None, "--cmd", "-c", help="Direct command to run as stdio server"),
+    server: Optional[str] = typer.Option(None, "--server", "-s", help="Name of registered server to test"),
+    pings: int = typer.Option(3, "--pings", "-p", help="Number of benchmark roundtrips to run"),
+    timeout: float = typer.Option(12.0, "--timeout", "-t", help="Connection timeout in seconds"),
+    json_output: bool = typer.Option(False, "--json", help="Output machine-readable JSON report for CI/CD"),
+    strict: bool = typer.Option(False, "--strict", help="Fail if any warnings are detected"),
+):
+    """
+    Automated test runner & protocol compliance checker for MCP servers.
+    Validates protocol handshake, JSON Schema for all tools, resource URIs, and latency.
+    Exits with code 0 on success, code 1 on failure.
+
+    Example: mcptui test demo
+    Example: mcptui test "python my_server.py"
+    Example: mcptui test http://localhost:8000/sse
+    Example: mcptui test --server my-server --json
+    """
+    if cmd:
+        cfg = _parse_cmd_to_config("stdio-test", cmd)
+    elif server:
+        cfg = _resolve_server(server)
+    elif target:
+        if target.startswith("http://") or target.startswith("https://"):
+            cfg = ServerConfig(name="remote-sse", transport="sse", url=target, source="cli:test")
+        elif target.lower() in ("demo", "mcptui-demo"):
+            cfg = get_demo_config()
+        elif " " in target or target.endswith(".py") or target.endswith(".js") or target.endswith(".ts") or target.startswith("npx"):
+            cfg = _parse_cmd_to_config("stdio-test", target)
+        else:
+            all_servers = discover_all_servers()
+            if target in all_servers:
+                cfg = all_servers[target]
+            else:
+                cfg = _parse_cmd_to_config("stdio-test", target)
+    else:
+        cfg = get_demo_config()
+
+    from mcptui.tester import run_server_tests, render_report_rich, render_report_json
+
+    async def _run():
+        if not json_output:
+            with console.status(f"[cyan]Testing {cfg.name} ({cfg.display_target()})...[/cyan]"):
+                return await run_server_tests(cfg, pings=pings, timeout_sec=timeout, strict=strict)
+        else:
+            return await run_server_tests(cfg, pings=pings, timeout_sec=timeout, strict=strict)
+
+    report = asyncio.run(_run())
+
+    if json_output:
+        print(render_report_json(report))
+    else:
+        render_report_rich(report, console)
+
+    if not report.is_success:
+        raise typer.Exit(code=1)
+
+
 def _derive_friendly_name(cmd: str, args: List[str]) -> str:
     """Create an intuitive server label based on command or target script."""
     for arg in args:
