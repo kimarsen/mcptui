@@ -80,6 +80,7 @@ class ToolsView(Widget):
             with Horizontal(classes="action-bar"):
                 yield Button("Execute (Ctrl+Enter)", variant="success", id="btn-execute")
                 yield Button("Copy Result", variant="default", id="btn-copy")
+                yield Button("Export Code", variant="default", id="btn-export-code")
                 yield Label("Status: Ready", id="status-pill")
 
             yield Label("Response", classes="input-section-title")
@@ -157,6 +158,27 @@ class ToolsView(Widget):
             await self.execute_current_tool()
         elif event.button.id == "btn-copy":
             self.copy_result()
+        elif event.button.id == "btn-export-code":
+            self.action_export_code()
+
+    def action_export_code(self) -> None:
+        """Open the code generator & export modal for current tool and parameters."""
+        if not self.current_tool_name:
+            self.app.notify("Select a tool first to export code", severity="warning")
+            return
+
+        editor = self.query_one("#tool-params-editor", TextArea)
+        params_str = editor.text.strip()
+        try:
+            params = json.loads(params_str) if params_str else {}
+        except Exception:
+            params = {}
+
+        from mcptui.cli import get_demo_config
+        from mcptui.ui.export_modal import ExportModal
+        cfg = self.client.config or get_demo_config()
+
+        self.app.push_screen(ExportModal(config=cfg, tool_name=self.current_tool_name, arguments=params))
 
     def copy_result(self) -> None:
         """Copy response to system clipboard."""

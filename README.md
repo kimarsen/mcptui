@@ -179,6 +179,12 @@ Save it into your local `mcp.json` or `%APPDATA%\Claude\claude_desktop_config.js
   - One-click execution (`Ctrl+Enter`) with live duration & latency measurement (`OK 18ms`).
   - Pretty-printed, syntax-highlighted output with clipboard copying.
 
+- ⚡ **Code Snippet Generator & 1-Click Client Integration**:
+  - Instant code generation for **Python SDK (`mcp`)**, **TypeScript SDK (`@modelcontextprotocol/sdk`)**, **CLI command**, and **raw JSON-RPC 2.0**.
+  - **1-Click Install to Claude Desktop**: writes server configuration directly to `claude_desktop_config.json` without manual JSON editing!
+  - **1-Click Install to Cursor**: writes into `.cursor/mcp.json` automatically.
+  - Interactive `Export Code` modal directly inside the Tools tab.
+
 - 🧪 **CI/CD Test Runner & Protocol Compliance Checker (`mcptui test`)**:
   - Validates protocol handshake, tool `inputSchema` specifications, resource URIs, and prompts.
   - Benchmarks RPC roundtrip latency with min/avg/max diagnostics.
@@ -218,6 +224,15 @@ Save it into your local `mcp.json` or `%APPDATA%\Claude\claude_desktop_config.js
 `mcptui` also works as a scriptable headless CLI and test runner for automated testing and CI/CD pipelines:
 
 ```bash
+# 1-Click Install server into Claude Desktop or Cursor:
+mcptui install claude "python my_server.py"
+mcptui install cursor notes
+
+# Export code snippets & configs from terminal:
+mcptui export demo --format python
+mcptui export demo --format typescript --tool calculate --arguments '{"expression": "2+2"}'
+mcptui export "python my_server.py" --format claude
+
 # Automated compliance testing & latency benchmark (exits 0 on success, 1 on fail)
 mcptui test "python my_server.py"
 mcptui test http://localhost:8000/sse

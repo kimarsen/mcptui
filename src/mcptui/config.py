@@ -172,3 +172,25 @@ def remove_from_local_mcp_json(name: str, path: Optional[Path] = None) -> bool:
     except Exception:
         pass
     return False
+
+
+def save_to_claude_desktop(config: ServerConfig) -> Path:
+    """Save or update an MCP server definition in Claude Desktop configuration."""
+    target_path = get_claude_desktop_config_path()
+    if not target_path:
+        raise RuntimeError("Unable to determine Claude Desktop configuration path on this operating system.")
+
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    return save_to_local_mcp_json(config, path=target_path)
+
+
+def save_to_cursor(config: ServerConfig, path: Optional[Path] = None) -> Path:
+    """Save or update an MCP server definition in Cursor mcp.json configuration."""
+    if path:
+        target_path = path
+    else:
+        cursor_dir = Path.cwd() / ".cursor"
+        cursor_dir.mkdir(parents=True, exist_ok=True)
+        target_path = cursor_dir / "mcp.json"
+
+    return save_to_local_mcp_json(config, path=target_path)

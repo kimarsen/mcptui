@@ -362,6 +362,143 @@ def cmd_test(
         raise typer.Exit(code=1)
 
 
+@app.command(name="export")
+def cmd_export(
+    target: Optional[str] = typer.Argument(None, help="Server name (or 'demo') or command"),
+    format: str = typer.Option("claude", "--format", "-f", help="Export format: claude, cursor, python, typescript, cli, jsonrpc"),
+    tool: Optional[str] = typer.Option(None, "--tool", help="Tool name for tool call snippets"),
+    arguments: str = typer.Option("{}", "--arguments", "-a", help="JSON string of arguments for tool call"),
+    cmd: Optional[str] = typer.Option(None, "--cmd", "-c", help="Direct command to run as stdio server"),
+    server: Optional[str] = typer.Option(None, "--server", "-s", help="Server name"),
+):
+    """
+    Generate drop-in integration code snippets for Claude, Cursor, Python, and TypeScript.
+    Example: mcptui export demo --format python
+    Example: mcptui export "python my_server.py" --format claude
+    Example: mcptui export demo --tool calculate --arguments '{"expression": "2+2"}' --format typescript
+    """
+    if cmd:
+        cfg = _parse_cmd_to_config("export-server", cmd)
+    elif server:
+        cfg = _resolve_server(server)
+    elif target:
+        if target.startswith("http://") or target.startswith("https://"):
+            cfg = ServerConfig(name="remote-sse", transport="sse", url=target, source="cli:export")
+        elif target.lower() in ("demo", "mcptui-demo"):
+            cfg = get_demo_config()
+        elif " " in target or target.endswith(".py") or target.endswith(".js") or target.endswith(".ts") or target.startswith("npx"):
+            cfg = _parse_cmd_to_config("export-server", target)
+        else:
+            all_servers = discover_all_servers()
+            if target in all_servers:
+                cfg = all_servers[target]
+            else:
+                cfg = _parse_cmd_to_config("export-server", target)
+    else:
+        cfg = get_demo_config()
+
+    try:
+        args_dict = json.loads(arguments) if arguments else {}
+    except Exception as exc:
+        rprint(f"[bold red]Invalid JSON arguments:[/bold red] {exc}")
+        raise typer.Exit(code=1)
+
+    from mcptui.codegen import (
+        generate_claude_config_snippet,
+        generate_cli_snippet,
+        generate_cursor_config_snippet,
+        generate_jsonrpc_snippet,
+        generate_python_snippet,
+        generate_typescript_snippet,
+    )
+
+    fmt = format.lower()
+    if fmt in ("claude", "claude-desktop"):
+        print(generate_claude_config_snippet(cfg))
+    elif fmt == "cursor":
+        print(generate_cursor_config_snippet(cfg))
+    elif fmt in ("python", "py"):
+        print(generate_python_snippet(cfg, tool_name=tool, arguments=args_dict))
+    elif fmt in ("typescript", "ts", "node", "javascript", "js"):
+        print(generate_typescript_snippet(cfg, tool_name=tool, arguments=args_dict))
+    elif fmt == "cli":
+        print(generate_cli_snippet(cfg, tool_name=tool, arguments=args_dict))
+    elif fmt in ("jsonrpc", "json-rpc", "rpc"):
+        print(generate_jsonrpc_snippet(tool_name=tool, arguments=args_dict))
+    else:
+        rprint(f"[bold red]Unknown format:[/bold red] '{format}'. Supported formats: claude, cursor, python, typescript, cli, jsonrpc")
+        raise typer.Exit(code=1)
+
+
+@app.command(name="install")
+def cmd_install(
+    destination: str = typer.Argument(..., help="Where to install: 'claude' (Claude Desktop), 'cursor' (Cursor .cursor/mcp.json), or 'local' (mcp.json)"),
+    target: Optional[str] = typer.Argument(None, help="Server name or command (e.g. 'python server.py' or 'demo')"),
+    name: Optional[str] = typer.Option(None, "--name", "-n", help="Custom name for the server"),
+    cmd: Optional[str] = typer.Option(None, "--cmd", "-c", help="Direct command to run as stdio server"),
+):
+    """
+    Install an MCP server directly into Claude Desktop or Cursor configuration in 1 step!
+    Example: mcptui install claude "python my_server.py"
+    Example: mcptui install cursor notes
+    Example: mcptui install claude "http://localhost:8000/sse" --name my-remote-mcp
+    """
+    if cmd:
+        cfg = _parse_cmd_to_config(name or "custom-server", cmd)
+    elif target:
+        if target.startswith("http://") or target.startswith("https://"):
+            srv_name = name or "remote-mcp"
+            cfg = ServerConfig(name=srv_name, transport="sse", url=target, source="cli:install")
+        elif target.lower() in ("demo", "mcptui-demo"):
+            cfg = get_demo_config()
+            cfg.transport = "stdio"
+        elif " " in target or target.endswith(".py") or target.endswith(".js") or target.endswith(".ts") or target.startswith("npx"):
+            cfg = _parse_cmd_to_config(name or "custom-server", target)
+        else:
+            all_servers = discover_all_servers()
+            if target in all_servers:
+                cfg = all_servers[target]
+            else:
+                cfg = _parse_cmd_to_config(name or target, target)
+    else:
+        rprint("[bold red]Error:[/bold red] Please provide a server command, URL, or name to install.")
+        raise typer.Exit(code=1)
+
+    if name:
+        cfg.name = name
+
+    from mcptui.config import save_to_claude_desktop, save_to_cursor, save_to_local_mcp_json
+
+    dest = destination.lower()
+    if dest in ("claude", "claude-desktop"):
+        try:
+            path = save_to_claude_desktop(cfg)
+            rprint(f"[bold green]Successfully installed server '{cfg.name}' to Claude Desktop![/bold green]")
+            rprint(f"Config updated at: [dim]{path}[/dim]")
+            rprint("Restart Claude Desktop to start using your MCP tools.")
+        except Exception as exc:
+            rprint(f"[bold red]Failed to install to Claude Desktop:[/bold red] {exc}")
+            raise typer.Exit(code=1)
+    elif dest == "cursor":
+        try:
+            path = save_to_cursor(cfg)
+            rprint(f"[bold green]Successfully installed server '{cfg.name}' to Cursor![/bold green]")
+            rprint(f"Config updated at: [dim]{path}[/dim]")
+        except Exception as exc:
+            rprint(f"[bold red]Failed to install to Cursor:[/bold red] {exc}")
+            raise typer.Exit(code=1)
+    elif dest in ("local", "mcp.json"):
+        try:
+            path = save_to_local_mcp_json(cfg)
+            rprint(f"[bold green]Successfully saved server '{cfg.name}' to {path.name}![/bold green]")
+        except Exception as exc:
+            rprint(f"[bold red]Failed to save to local mcp.json:[/bold red] {exc}")
+            raise typer.Exit(code=1)
+    else:
+        rprint(f"[bold red]Unknown destination:[/bold red] '{destination}'. Supported: claude, cursor, local")
+        raise typer.Exit(code=1)
+
+
 def _derive_friendly_name(cmd: str, args: List[str]) -> str:
     """Create an intuitive server label based on command or target script."""
     for arg in args:
