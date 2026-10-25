@@ -130,6 +130,19 @@ class ResourcesView(Widget):
         status.update("Status: Ready")
         status.remove_class("success", "error", "running")
 
+    def load_resource_call(self, uri: str) -> None:
+        """Select a resource and highlight it in the list."""
+        self.select_resource(uri)
+        try:
+            res_list = self.query_one("#resource-list", OptionList)
+            for idx in range(res_list.option_count):
+                opt = res_list.get_option_at_index(idx)
+                if opt.id == uri:
+                    res_list.highlighted = idx
+                    break
+        except Exception:
+            pass
+
     async def on_click(self, event: events.Click) -> None:
         """Handle click events, triggering resource reading on double click."""
         target = event.widget

@@ -9,6 +9,7 @@ import asyncio
 import json
 import os
 import sys
+from pathlib import Path
 from typing import List, Optional
 
 # Ensure UTF-8 on Windows consoles to prevent cp1251/charmap crashes
@@ -65,6 +66,8 @@ def main_callback(
     cmd: Optional[str] = typer.Option(None, "--cmd", "-c", help="Command to run via stdio (e.g. 'python server.py')"),
     sse: Optional[str] = typer.Option(None, "--sse", help="SSE URL to connect to (e.g. 'http://localhost:8000/sse')"),
     demo: bool = typer.Option(False, "--demo", "-d", help="Launch directly into demo mode"),
+    env_file: Optional[Path] = typer.Option(None, "--env-file", "-E", help="Path to .env file to load"),
+    env: Optional[List[str]] = typer.Option(None, "--env", "-e", help="Environment variable in KEY=VALUE format (repeatable)"),
 ):
     """
     Launch mcptui interactive Terminal UI.
@@ -99,6 +102,9 @@ def main_callback(
         else:
             target_config = get_demo_config()
 
+    from mcptui.env import apply_env_to_config
+    apply_env_to_config(target_config, env_file=env_file, cli_env=env)
+
     from mcptui.ui.app import run_tui
     run_tui(target_config)
 
@@ -116,6 +122,8 @@ def cmd_demo():
 def cmd_run(
     command: str = typer.Argument(..., help="The command to run as an MCP server via stdio"),
     args: List[str] = typer.Argument(None, help="Optional arguments for the command"),
+    env_file: Optional[Path] = typer.Option(None, "--env-file", "-E", help="Path to .env file to load"),
+    env: Optional[List[str]] = typer.Option(None, "--env", "-e", help="Environment variable in KEY=VALUE format (repeatable)"),
 ):
     """
     Launch an MCP server via stdio and open mcptui connected to it.
@@ -139,6 +147,9 @@ def cmd_run(
         args=full_args,
         source="cli:run",
     )
+    from mcptui.env import apply_env_to_config
+    apply_env_to_config(cfg, env_file=env_file, cli_env=env)
+
     from mcptui.ui.app import run_tui
     run_tui(cfg)
 
@@ -307,6 +318,8 @@ def cmd_test(
     ),
     cmd: Optional[str] = typer.Option(None, "--cmd", "-c", help="Direct command to run as stdio server"),
     server: Optional[str] = typer.Option(None, "--server", "-s", help="Name of registered server to test"),
+    env_file: Optional[Path] = typer.Option(None, "--env-file", "-E", help="Path to .env file to load"),
+    env: Optional[List[str]] = typer.Option(None, "--env", "-e", help="Environment variable in KEY=VALUE format (repeatable)"),
     pings: int = typer.Option(3, "--pings", "-p", help="Number of benchmark roundtrips to run"),
     timeout: float = typer.Option(12.0, "--timeout", "-t", help="Connection timeout in seconds"),
     json_output: bool = typer.Option(False, "--json", help="Output machine-readable JSON report for CI/CD"),
@@ -341,6 +354,9 @@ def cmd_test(
                 cfg = _parse_cmd_to_config("stdio-test", target)
     else:
         cfg = get_demo_config()
+
+    from mcptui.env import apply_env_to_config
+    apply_env_to_config(cfg, env_file=env_file, cli_env=env)
 
     from mcptui.tester import run_server_tests, render_report_rich, render_report_json
 

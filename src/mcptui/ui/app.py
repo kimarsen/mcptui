@@ -16,7 +16,7 @@ from textual.containers import Horizontal
 from textual.widgets import Button, Footer, Label, TabbedContent, TabPane
 
 from mcptui.client import MCPClientManager
-from mcptui.models import ServerConfig
+from mcptui.models import CallRecord, ServerConfig
 from mcptui.ui.server_modal import ServerSwitcherModal
 from mcptui.ui.views.history_view import HistoryView
 from mcptui.ui.views.logs_view import ProtocolLogsView
@@ -144,6 +144,34 @@ class MCPTuiApp(App):
 
         tabs = self.query_one("#tabs", SafeTabbedContent)
         tabs.active = tab_id
+
+    def replay_call_record(self, record: CallRecord) -> None:
+        """Switch to appropriate tab and populate arguments/target from history record."""
+        tabs = self.query_one("#tabs", SafeTabbedContent)
+        if record.kind == "tool":
+            tabs.active = "tab-tools"
+            try:
+                tools_view = self.query_one("#tools-view", ToolsView)
+                tools_view.load_tool_call(record.name, record.input_data)
+                self.notify(f"Loaded tool '{record.name}' arguments from history", severity="information")
+            except Exception as exc:
+                self.notify(f"Could not load tool call: {exc}", severity="warning")
+        elif record.kind == "resource":
+            tabs.active = "tab-resources"
+            try:
+                res_view = self.query_one("#resources-view", ResourcesView)
+                res_view.load_resource_call(record.name)
+                self.notify(f"Selected resource '{record.name}' from history", severity="information")
+            except Exception as exc:
+                self.notify(f"Could not load resource: {exc}", severity="warning")
+        elif record.kind == "prompt":
+            tabs.active = "tab-prompts"
+            try:
+                prompts_view = self.query_one("#prompts-view", PromptsView)
+                prompts_view.load_prompt_call(record.name, record.input_data)
+                self.notify(f"Loaded prompt '{record.name}' arguments from history", severity="information")
+            except Exception as exc:
+                self.notify(f"Could not load prompt: {exc}", severity="warning")
 
     def action_health_check(self) -> None:
         """Open Health Check & Test Runner modal."""

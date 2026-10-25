@@ -197,14 +197,20 @@ Button:hover {
     padding: 0 1;
 }
 
-#btn-execute {
+#btn-execute, #btn-replay-history {
     background: #238636;
     color: #ffffff;
     text-style: bold;
 }
 
-#btn-execute:hover {
+#btn-execute:hover, #btn-replay-history:hover {
     background: #2ea043;
+}
+
+#history-view .sidebar {
+    width: 44;
+    min-width: 36;
+    max-width: 52;
 }
 
 #status-pill, #res-status-pill, #prompt-status-pill, #history-status-pill {

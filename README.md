@@ -207,7 +207,13 @@ Save it into your local `mcp.json` or `%APPDATA%\Claude\claude_desktop_config.js
 
 - 🕒 **Execution History & Replay**:
   - Stores recent invocations with timestamps, status, input parameters, and duration.
-  - Easily copy previous requests or inspect errors.
+  - **1-Click Replay in Editor**: press `Enter` on any history row or click `Re-run in Editor` to immediately load the recorded parameters back into the editor and switch tabs.
+  - **Live History Search & Filter**: search past invocations by target name, input parameters, output content, or status (`status:ok`, `status:error`).
+
+- 🌿 **Zero-Dependency `.env` & Environment Variable Loader**:
+  - Automatically loads `.env` files from current working directory or parent directories.
+  - Support for `--env-file` / `-E` and repeatable `--env` / `-e KEY=VALUE` CLI options across `mcptui`, `mcptui run`, and `mcptui test`.
+  - Pass secret API tokens (`OPENAI_API_KEY`, `GITHUB_TOKEN`, etc.) directly to your MCP servers without cluttering your global OS environment.
 
 - 🔍 **Auto-Discovery & Local Server Management**:
   - Automatically scans and imports configurations from:
@@ -265,6 +271,7 @@ mcptui remove notes
 | `1` – `5` | Switch active tab (Tools, Resources, Prompts, Logs, History) |
 | `Ctrl + Enter` | Execute active tool / Read resource / Get prompt |
 | `Double-Click` | Double-click resource title or list item to immediately READ resource |
+| `Enter` / Click | On History row: immediately replay invocation back into editor |
 | `F2` | Open Server Switcher modal |
 | `F5` / `Ctrl + R` | Reload server capabilities |
 | `F6` | Run MCP Server Health Check & Compliance Test runner |

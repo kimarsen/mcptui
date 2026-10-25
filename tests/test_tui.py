@@ -18,15 +18,16 @@ class TestTUIApp(unittest.IsolatedAsyncioTestCase):
         app = MCPTuiApp(initial_config=config)
 
         async with app.run_test() as pilot:
-            # Wait for connection worker
-            await pilot.pause(0.5)
+            tools_view = app.query_one("#tools-view", ToolsView)
+            # Wait for connection worker and tools population
+            for _ in range(40):
+                await pilot.pause(0.1)
+                if app.client.is_connected and len(tools_view._all_tool_names) > 0:
+                    break
 
             # Check that client is connected
             self.assertTrue(app.client.is_connected)
             self.assertEqual(app.client.server_name, "mcptui-demo")
-
-            # Check tools view
-            tools_view = app.query_one("#tools-view", ToolsView)
             self.assertGreater(len(tools_view._all_tool_names), 0)
 
             # Provide valid expression

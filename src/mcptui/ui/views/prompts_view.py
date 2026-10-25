@@ -126,6 +126,28 @@ class PromptsView(Widget):
         status.update("Status: Ready")
         status.remove_class("success", "error", "running")
 
+    def load_prompt_call(self, prompt_name: str, arguments: Any) -> None:
+        """Select a prompt and populate the argument editor with recorded inputs."""
+        self.select_prompt(prompt_name)
+        try:
+            p_list = self.query_one("#prompt-list", OptionList)
+            for idx in range(p_list.option_count):
+                opt = p_list.get_option_at_index(idx)
+                if opt.id == prompt_name:
+                    p_list.highlighted = idx
+                    break
+        except Exception:
+            pass
+
+        editor = self.query_one("#prompt-params-editor", TextArea)
+        if isinstance(arguments, (dict, list)):
+            editor.text = json.dumps(arguments, indent=2)
+        elif isinstance(arguments, str):
+            editor.text = arguments
+        else:
+            editor.text = "{}"
+        editor.focus()
+
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "btn-get-prompt":
             await self.get_current_prompt()

@@ -153,6 +153,28 @@ class ToolsView(Widget):
         status.update("Status: Ready")
         status.remove_class("success", "error", "running")
 
+    def load_tool_call(self, tool_name: str, arguments: Any) -> None:
+        """Select a tool and populate the argument editor with recorded inputs."""
+        self.select_tool(tool_name)
+        try:
+            tool_list = self.query_one("#tool-list", OptionList)
+            for idx in range(tool_list.option_count):
+                opt = tool_list.get_option_at_index(idx)
+                if opt.id == tool_name:
+                    tool_list.highlighted = idx
+                    break
+        except Exception:
+            pass
+
+        editor = self.query_one("#tool-params-editor", TextArea)
+        if isinstance(arguments, (dict, list)):
+            editor.text = json.dumps(arguments, indent=2)
+        elif isinstance(arguments, str):
+            editor.text = arguments
+        else:
+            editor.text = "{}"
+        editor.focus()
+
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "btn-execute":
             await self.execute_current_tool()
